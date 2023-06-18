@@ -9,22 +9,20 @@ router.get('/*', async (req, res) => {
     res.sendStatus(511)
     return
   }
-  const fetchArgs = {
-    method: req.method,
-    body: req.body,
-    headers: {
-      cookie: req.app.locals.cookie,
-    },
-  }
   try {
-    const response = await fetch(
-      `${req.app.locals.HOST}/${req.originalUrl}`,
-      fetchArgs
-    )
+    const response = await fetch(`${req.app.locals.HOST}${req.originalUrl}`, {
+      method: req.method,
+      redirect: 'manual',
+      body: req.body,
+      headers: new Headers({
+        cookie: `.AspNet.Cookies=${req.app.locals.cookie}`,
+        'User-Agent': req.app.locals.USERAGENT,
+      }),
+    })
     if (!response.ok) {
       throw new Error('Bad response from server')
     }
-    res.send(await response)
+    res.send(await response.json())
   } catch (err) {
     console.error(err)
     res.sendStatus(502)
