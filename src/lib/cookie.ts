@@ -1,7 +1,16 @@
-import { Express } from 'express'
 import fetch, { Headers } from 'node-fetch'
+import schedule from 'node-schedule'
+import { app } from '../index.js'
 
-async function refresh(app: Express) {
+function scheduleRefresh() {
+  refresh()
+  schedule.scheduleJob('*/10 * * * *', async function () {
+    refresh()
+  })
+}
+
+async function refresh() {
+  console.log(`Refreshing cookie at ${app.locals.stamp()}`)
   const response = await fetch(`${app.locals.HOST}/api/terms/`, {
     redirect: 'manual',
     headers: new Headers({
@@ -29,6 +38,4 @@ async function refresh(app: Express) {
     .split(';')[0]
 }
 
-export default {
-  refresh,
-}
+export default { scheduleRefresh }
