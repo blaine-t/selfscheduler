@@ -15,3 +15,6 @@
 
 # Prettier cache is jank and may create
 /node_modules
+
+# env duh
+.env
