@@ -2,7 +2,7 @@
   "restartable": "rs",
   "verbose": true,
   "execMap": {
-    "ts": "ts-node"
+    "ts": "ts-node-esm"
   },
   "watch": ["src/"],
   "env": {
