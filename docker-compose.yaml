@@ -1,0 +1,14 @@
+version: '3'
+services:
+  node:
+    image: 'blaine-t/selfscheduler'
+    container_name: 'selfscheduler-node'
+    working_dir: '/app'
+    ports:
+      - '42042:42042/tcp'
+    volumes:
+      - './.env:/app/.env'
+    environment:
+      - NODE_ENV=production
+    command: node dist/index.js
+    restart: 'unless-stopped'
