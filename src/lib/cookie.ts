@@ -1,6 +1,7 @@
 import fetch, { Headers } from 'node-fetch'
 import schedule from 'node-schedule'
 import { app } from '../index.js'
+import { Response } from 'node-fetch'
 
 function scheduleRefresh() {
   refresh()
@@ -10,7 +11,6 @@ function scheduleRefresh() {
 }
 
 async function refresh() {
-  console.log(`Refreshing cookie at ${app.locals.stamp()}`)
   const response = await fetch(`${app.locals.HOST}/api/terms/`, {
     redirect: 'manual',
     headers: new Headers({
@@ -19,6 +19,10 @@ async function refresh() {
     }),
   })
 
+  extract(response)
+}
+
+function extract(response: Response) {
   // if response code is 302, the provided cookie is invalid
   if (response.status === 302) {
     throw Error('Provided cookie was invalid, unable to refresh')
@@ -33,9 +37,12 @@ async function refresh() {
   // parse out the AspNet cookie string
   app.locals.cookie = response.headers
     .raw()
-    ['set-cookie'].filter((value) => value.startsWith('.AspNet.Cookies='))[0]
+    ['set-cookie'].filter((value: string) =>
+      value.startsWith('.AspNet.Cookies=')
+    )[0]
     .split('.AspNet.Cookies=')[1]
     .split(';')[0]
+  console.log(`Refreshed cookie at ${app.locals.stamp()}`)
 }
 
-export default { scheduleRefresh }
+export default { scheduleRefresh, extract }

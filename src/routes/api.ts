@@ -1,4 +1,5 @@
 import express from 'express'
+import cookie from '../lib/cookie.js'
 const router = express.Router()
 
 import fetch from 'node-fetch'
@@ -23,6 +24,7 @@ router.get('/*', async (req, res) => {
       throw new Error('Bad response from server')
     }
     res.send(await response.json())
+    cookie.extract(response)
   } catch (err) {
     console.error(err)
     res.sendStatus(502)
