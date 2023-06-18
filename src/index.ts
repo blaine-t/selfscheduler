@@ -1,8 +1,11 @@
-import logger from './lib/logger'
+import express from 'express'
+const app = express()
+const port = 42042
 
-logger.log('Hello World!')
+import { router as api } from './routes/api'
 
-// eslint-disable-next-line no-constant-condition
-while (true) {
-  const i = 0
-}
+app.use('/api', api)
+
+app.listen(port, () => {
+  console.log(`proxy server listening on http://127.0.0.1:${port}`)
+})
