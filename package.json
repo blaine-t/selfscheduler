@@ -2,7 +2,6 @@
   "name": "selfscheduler",
   "version": "0.0.1",
   "packageManager": "pnpm@8.6.2",
-  "type": "module",
   "scripts": {
     "dev": "nodemon -L src/index.ts",
     "dev:debug": "nodemon -L --exec 'node --inspect=0.0.0.0:9229 --require ts-node/register src/index.ts'",

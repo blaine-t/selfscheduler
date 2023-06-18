@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import cookie from '../lib/cookie.js'
+import cookie from '../lib/cookie'
 const router = Router()
 
 function listEndpoints() {

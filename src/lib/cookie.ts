@@ -1,5 +1,5 @@
 import schedule from 'node-schedule'
-import { app } from '../index.js'
+import { app } from '../index'
 
 function scheduleRefresh() {
   refresh()

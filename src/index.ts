@@ -4,11 +4,11 @@ const app = express()
 const port = process.env.PORT || 42042
 
 // Add proxy api endpoint
-import { router as api } from './routes/api.js'
+import { router as api } from './routes/api'
 app.use('/api', api)
 
 // Source .env
-import 'dotenv/config.js'
+import 'dotenv/config'
 
 // Check cookie
 if (!process.env.COOKIE) throw Error('No cookie provided')
@@ -24,7 +24,7 @@ app.locals.USERAGENT =
 app.locals.stamp = () => `${new Date().toLocaleTimeString('en-UK')}`
 
 // Import cookie lib to setup keepalive
-import cookie from './lib/cookie.js'
+import cookie from './lib/cookie'
 
 // Setup the cookie refresher to run every 10 minutes with node-schedule
 cookie.scheduleRefresh()
