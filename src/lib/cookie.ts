@@ -1,24 +1,28 @@
-import fetch, { Headers } from 'node-fetch'
 import schedule from 'node-schedule'
 import { app } from '../index.js'
-import { Response } from 'node-fetch'
 
 function scheduleRefresh() {
   refresh()
+  // Attempt to refresh the cookie every 10 minutes
   schedule.scheduleJob('*/10 * * * *', async function () {
     refresh()
   })
 }
 
 async function refresh() {
-  const response = await fetch(`${app.locals.HOST}/api/terms/`, {
-    redirect: 'manual',
-    headers: new Headers({
-      cookie: `.AspNet.Cookies=${app.locals.cookie}`,
-      'User-Agent': app.locals.USERAGENT,
-    }),
+  // Craft and send response to endpoint for keepalive
+  const url = `${app.locals.HOST}/api/terms/`
+  const headers = new Headers({
+    cookie: `.AspNet.Cookies=${app.locals.cookie}`,
+    'User-Agent': app.locals.USERAGENT,
   })
+  const fetchArgs: RequestInit = {
+    redirect: 'manual',
+    headers: headers,
+  }
+  const response = await fetch(url, fetchArgs)
 
+  // Take out the cookie from the response
   extract(response)
 }
 
@@ -30,19 +34,14 @@ function extract(response: Response) {
 
   // if no set-cookie header is returned, this cookie isn't old enough to be refreshed
   // so just exit since the cookie's still valid
-  if (!('set-cookie' in response.headers.raw())) {
+  const setCookie = response.headers.get('set-cookie')
+  if (!setCookie) {
     return
   }
 
   // parse out the AspNet cookie string
-  app.locals.cookie = response.headers
-    .raw()
-    ['set-cookie'].filter((value: string) =>
-      value.startsWith('.AspNet.Cookies=')
-    )[0]
-    .split('.AspNet.Cookies=')[1]
-    .split(';')[0]
-  console.log(`Refreshed cookie at ${app.locals.stamp()}`)
+  app.locals.cookie = setCookie.split('.AspNet.Cookies=')[1].split(';')[0]
+  console.info(`Refreshed cookie at ${app.locals.stamp()}`)
 }
 
 export default { scheduleRefresh, extract }

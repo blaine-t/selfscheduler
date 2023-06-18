@@ -1,20 +1,20 @@
-import express from 'express'
-import 'dotenv/config.js'
-import cookie from './lib/cookie.js'
-
 // Initialize express
+import express from 'express'
 const app = express()
 const port = process.env.PORT || 42042
 
 // Add proxy api endpoint
 import { router as api } from './routes/api.js'
-
 app.use('/api', api)
 
-if (!process.env.cookie) throw Error('No cookie provided')
+// Source .env
+import 'dotenv/config.js'
 
-// Load env variables
-app.locals.cookie = process.env.cookie
+// Check cookie
+if (!process.env.COOKIE) throw Error('No cookie provided')
+
+// Load env variables to app.locals
+app.locals.cookie = process.env.COOKIE
 app.locals.HOST = process.env.HOST || 'https://unl.collegescheduler.com'
 app.locals.USERAGENT =
   process.env.USERAGENT ||
@@ -23,12 +23,15 @@ app.locals.USERAGENT =
 // Timestamp to use anywhere
 app.locals.stamp = () => `${new Date().toLocaleTimeString('en-UK')}`
 
+// Import cookie lib to setup keepalive
+import cookie from './lib/cookie.js'
+
 // Setup the cookie refresher to run every 10 minutes with node-schedule
 cookie.scheduleRefresh()
 
 // Host express server
 app.listen(port, () => {
-  console.log(`proxy server listening on http://127.0.0.1:${port}`)
+  console.info(`proxy server listening on http://127.0.0.1:${port}`)
 })
 
 // Export app so locals are available to other ts files
