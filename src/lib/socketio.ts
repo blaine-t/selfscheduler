@@ -30,8 +30,16 @@ async function emit(requestType: string, request: object) {
   const socket = connect()
   await authorize(socket)
   console.log('emit')
-  socket.emit(requestType, request, (callbackResponse: object) => {
-    listen(socket, requestType.replace('request', 'response'), callbackResponse)
+  return new Promise((resolve) => {
+    socket.emit(requestType, request, (callbackResponse: object) => {
+      resolve(
+        listen(
+          socket,
+          requestType.replace('request', 'response'),
+          callbackResponse
+        )
+      )
+    })
   })
 }
 
@@ -39,28 +47,32 @@ function listen(
   socket: SocketIOClient.Socket,
   responseType: string,
   callbackResponse: object
-) {
-  if (JSON.stringify(callbackResponse).includes('true')) {
-    socket.on(responseType, (response: object) => {
-      socket.close()
-      console.log(JSON.stringify(response))
-      // TODO: Add notifications
-    })
-  } else {
-    // TODO: Add error notification
-  }
+): Promise<object> {
+  return new Promise((resolve, reject) => {
+    if (JSON.stringify(callbackResponse).includes('true')) {
+      socket.on(responseType, (response: object) => {
+        socket.close()
+        console.log(JSON.stringify(response))
+        // TODO: Add notifications
+        resolve(response)
+      })
+    } else {
+      reject(new Error())
+      // TODO: Add error notification
+    }
+  })
 }
 
-function enroll(termCode: string) {
+async function enroll(termCode: string) {
   const request = {
     subdomain: app.locals.SUBDOMAIN,
     type: 'ENROLL_CART',
     termCode,
   }
-  emit('registration-request', request)
+  await emit('registration-request', request)
 }
 
-function drop(
+async function drop(
   termCode: string,
   regNumberList: string[],
   academicCareerCode: string
@@ -82,46 +94,54 @@ function drop(
       academicCareerCode,
     })
   })
-  emit('registration-request', request)
+  await emit('registration-request', request)
 }
 
-function cart(termCode: string, classAction: Map<string, string>) {
+async function cart(termCode: string, regNumberList: string[]) {
   const request = {
+    nativeCartRequest: true,
     sections: [] as { regNumber: string; action: string }[],
     termCode,
     environment: app.locals.SUBDOMAIN,
   }
   // For each combination in classAction add that to be a new section in request
-  classAction.forEach((value, key) => {
-    request.sections.push({ regNumber: key, action: value })
+  regNumberList.forEach((regNumber) => {
+    request.sections.push({ regNumber, action: 'PUT' })
   })
-  emit('send-to-cart-request', request)
+  await emit('send-to-cart-request', request)
 }
 
-function swap(
+export interface ClassInfo {
+  sectionParameterValues: {
+    units: number
+    gradingBasis: string
+  }
+  regNumber: string
+  academicCareerCode: string
+}
+
+async function swap(
   termCode: string,
   dropRegNumber: string,
-  regNumber: string,
-  creditHours: number,
-  academicCareerCode: string,
-  gradingBasis: string
+  classInfo: ClassInfo
 ) {
   const request = {
     termCode,
     dropRegNumber,
     sections: [
       {
-        sectionParameterValues: {
-          gradingBasis,
-          units: creditHours,
-        },
-        regNumber,
-        academicCareerCode,
+        ...classInfo,
       },
     ],
     environment: app.locals.SUBDOMAIN,
   }
-  emit('swap-request', request)
+
+  await emit('swap-request', request)
 }
 
-export default { cart, drop, enroll, swap }
+async function fastSignup(termCode: string, regNumberList: string[]) {
+  await cart(termCode, regNumberList)
+  await enroll(termCode)
+}
+
+export default { cart, drop, enroll, swap, fastSignup }

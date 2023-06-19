@@ -6,3 +6,6 @@
 
 # env duh
 .env
+
+# Burpsuite CA cert
+*.pem
