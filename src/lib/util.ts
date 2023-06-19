@@ -22,7 +22,9 @@ async function checkResponse(response: Response) {
  * @param next 
  */
 function checkAuthentication(req: Request, res: ExpressResponse, next: NextFunction) {
-  if (app.locals.cookie || req.originalUrl.split('?')[0] === '/login') {
+  if (app.locals.cookie && req.originalUrl.split('?')[0] === '/login') {
+    res.redirect('/')
+  } else if (app.locals.cookie || req.originalUrl.split('?')[0] === '/login') {
     next()
   } else {
     res.redirect('/login')

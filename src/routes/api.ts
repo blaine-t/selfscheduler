@@ -8,9 +8,10 @@ const router = Router()
 
 function listEndpoints() {
   return `
-<a href="terms">terms</a>
-<br>
-<a href="terms/:term/courses">terms/:term/courses</a>
+<a href="/api/terms">terms</a> <br>
+<a href="/api/terms/Fall 2023/courses">terms/:term/courses</a> <br>
+<a href="/api/term-data/Fall 2023">term-data/:term</a> <br>
+<a href="/api/app-data">app-data <br>
 `
 }
 
