@@ -61,8 +61,8 @@ function enroll(termCode: string) {
 }
 
 function drop(
-  regNumberList: string[],
   termCode: string,
+  regNumberList: string[],
   academicCareerCode: string
 ) {
   const request = {
@@ -85,7 +85,7 @@ function drop(
   emit('registration-request', request)
 }
 
-function cart(classAction: Map<string, string>, termCode: string) {
+function cart(termCode: string, classAction: Map<string, string>) {
   const request = {
     sections: [] as { regNumber: string; action: string }[],
     termCode,
@@ -98,4 +98,30 @@ function cart(classAction: Map<string, string>, termCode: string) {
   emit('send-to-cart-request', request)
 }
 
-export default { enroll, drop, cart }
+function swap(
+  termCode: string,
+  dropRegNumber: string,
+  regNumber: string,
+  creditHours: number,
+  academicCareerCode: string,
+  gradingBasis: string
+) {
+  const request = {
+    termCode,
+    dropRegNumber,
+    sections: [
+      {
+        sectionParameterValues: {
+          gradingBasis,
+          units: creditHours,
+        },
+        regNumber,
+        academicCareerCode,
+      },
+    ],
+    environment: app.locals.SUBDOMAIN,
+  }
+  emit('swap-request', request)
+}
+
+export default { cart, drop, enroll, swap }
