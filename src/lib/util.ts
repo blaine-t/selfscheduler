@@ -7,21 +7,21 @@ async function checkResponse(response: Response) {
       `Provided cookie was invalid with status code ${response.status}`
     )
   }
-  try {
-    const jsonResponse = await response.json()
-    return jsonResponse
-  } catch (err) {
-    return err
-  }
+  const jsonResponse = await response.json()
+  return jsonResponse
 }
 
 /**
  * Middleware for protected routes, redirects to /login if a cookie isn't set yet
- * @param req 
- * @param res 
- * @param next 
+ * @param req
+ * @param res
+ * @param next
  */
-function checkAuthentication(req: Request, res: ExpressResponse, next: NextFunction) {
+function checkAuthentication(
+  req: Request,
+  res: ExpressResponse,
+  next: NextFunction
+) {
   if (app.locals.cookie && req.originalUrl.split('?')[0] === '/login') {
     res.redirect('/')
   } else if (app.locals.cookie || req.originalUrl.split('?')[0] === '/login') {

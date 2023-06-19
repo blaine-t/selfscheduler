@@ -1,10 +1,22 @@
 import { Router } from 'express'
 import { app } from '..'
 import { checkCookie, scheduleRefresh } from '../lib/cookie'
+import util from '../lib/util'
 const router = Router()
 
 router.get('/', async (req, res) => {
-  res.render('pages/root/index.ejs')
+  const response = await fetch(
+    `${app.locals.HOST}/api/terms`,
+    app.locals.defaultFetchArgs()
+  )
+  const jsonResponse = await util.checkResponse(response)
+  // extract term strings from the jsonResponse (e.g. 'Fall 2023')
+  const terms: Array<string> = jsonResponse.map(
+    (term: { id: string }) => term.id
+  )
+  res.render('pages/root/index.ejs', {
+    terms,
+  })
 })
 
 router.get('/login', async (req, res) => {
