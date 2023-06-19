@@ -7,7 +7,7 @@ RUN apk update
 WORKDIR /app
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@8.6.2 --activate
+RUN corepack enable && corepack prepare pnpm@8.6.3 --activate
 
 # Copy over dependency lists
 COPY package.json ./
