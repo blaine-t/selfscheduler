@@ -7,11 +7,28 @@ const port = process.env.PORT || 42042
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }))
 
+// Remove any trailing slashes with redirect
+app.use((req, res, next) => {
+  if (req.path.slice(-1) === '/' && req.path.length > 1) {
+    const query = req.url.slice(req.path.length)
+    const safepath = req.path.slice(0, -1).replace(/\/+/g, '/')
+    res.redirect(301, safepath + query)
+  } else {
+    next()
+  }
+})
+
+// Initialize "authentication"
+import { checkAuthentication } from './lib/util';
+app.use(checkAuthentication)
+
 // Add endpoints
 import { router as api } from './routes/api'
 import { router as root } from './routes/root'
+import { router as requests } from './routes/requests'
 app.use('/api', api)
 app.use('/', root)
+app.use('/requests', requests)
 
 // Source .env
 import 'dotenv/config'
