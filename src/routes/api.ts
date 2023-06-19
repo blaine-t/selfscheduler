@@ -1,5 +1,9 @@
 import { Router } from 'express'
+
 import cookie from '../lib/cookie'
+import util from '../lib/util'
+import { app } from '../index'
+
 const router = Router()
 
 function listEndpoints() {
@@ -24,24 +28,16 @@ router.get('/*', async (req, res) => {
   try {
     // Craft and send response to endpoint
     const url = `${req.app.locals.HOST}${req.originalUrl}`
-    const headers = new Headers({
-      cookie: `.AspNet.Cookies=${req.app.locals.cookie}`,
-      'User-Agent': req.app.locals.USERAGENT,
-    })
     const fetchArgs: RequestInit = {
       method: req.method,
       redirect: 'manual',
       body: req.body,
-      headers: headers,
+      headers: app.locals.headers(),
     }
     const response = await fetch(url, fetchArgs)
 
-    if (response.status === 302) {
-      throw Error('Provided cookie was invalid, unable to refresh')
-    }
-
     // Attempt to parse json before sending to avoid double send
-    const jsonResponse = await response.json()
+    const jsonResponse = await util.checkResponse(response)
     // Send response to client
     res.send(jsonResponse)
     // Attempt to extract the set-cookie if there is one from the response

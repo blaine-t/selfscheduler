@@ -12,15 +12,7 @@ function scheduleRefresh() {
 async function refresh() {
   // Craft and send response to endpoint for keepalive
   const url = `${app.locals.HOST}/api/terms/`
-  const headers = new Headers({
-    cookie: `.AspNet.Cookies=${app.locals.cookie}`,
-    'User-Agent': app.locals.USERAGENT,
-  })
-  const fetchArgs: RequestInit = {
-    redirect: 'manual',
-    headers: headers,
-  }
-  const response = await fetch(url, fetchArgs)
+  const response = await fetch(url, app.locals.defaultFetchArgs())
 
   // Take out the cookie from the response
   extract(response)
@@ -43,5 +35,7 @@ function extract(response: Response) {
   app.locals.cookie = setCookie.split('.AspNet.Cookies=')[1].split(';')[0]
   console.info(`Refreshed cookie at ${app.locals.stamp()}`)
 }
+
+export { refresh }
 
 export default { scheduleRefresh, extract }
