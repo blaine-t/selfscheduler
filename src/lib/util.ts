@@ -7,8 +7,7 @@ async function checkResponse(response: Response) {
       `Provided cookie was invalid with status code ${response.status}`
     )
   }
-  const jsonResponse = await response.json()
-  return jsonResponse
+  return await response.json()
 }
 
 /**

@@ -11,7 +11,7 @@ function listEndpoints() {
 <a href="/api/terms">terms</a> <br>
 <a href="/api/terms/Fall 2023/courses">terms/:term/courses</a> <br>
 <a href="/api/term-data/Fall 2023">term-data/:term</a> <br>
-<a href="/api/app-data">app-data <br>
+<a href="/api/app-data">app-data</a> <br>
 `
 }
 

@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { app } from '..'
-import { checkCookie, scheduleRefresh } from '../lib/cookie'
+import cookie from '../lib/cookie'
 import util from '../lib/util'
 const router = Router()
 
@@ -14,6 +14,7 @@ router.get('/', async (req, res) => {
   const terms: Array<string> = jsonResponse.map(
     (term: { id: string }) => term.id
   )
+  // const terms = ['Summer 2023', 'Fall 2023']
   res.render('pages/root/index.ejs', {
     terms,
   })
@@ -24,13 +25,13 @@ router.get('/login', async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
-  const cookie = req.body.cookie
-  if (!cookie) return
+  const reqCookie = req.body.cookie
+  if (!reqCookie) return
 
-  app.locals.cookie = cookie
+  app.locals.cookie = reqCookie
   let valid = true
   try {
-    await checkCookie()
+    cookie.extract(await cookie.checkCookie())
   } catch (e) {
     valid = false
   }
@@ -40,12 +41,12 @@ router.post('/login', async (req, res) => {
     console.log(
       'successful login, proxy is now available and cookie will now be refreshed'
     )
-    scheduleRefresh()
+    cookie.scheduleRefresh()
     res.redirect('/')
   } else {
-    // otherwise, login failed, unset it
+    // otherwise, login failed, unset cookie
     console.log('failed login due to invalid cookie')
-    app.locals.cookie = undefined
+    app.locals.cookie = null
     res.redirect('/login?failed=true')
   }
 })

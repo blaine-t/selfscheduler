@@ -39,6 +39,9 @@ app.locals.USERAGENT =
 app.locals.WS_HOST = process.env.WS_HOST || 'wss://api.collegescheduler.com'
 app.locals.SUBDOMAIN = process.env.SUBDOMAIN || 'unl'
 app.locals.HOST = `https://${app.locals.SUBDOMAIN}.collegescheduler.com`
+app.locals.REFRESH_INTERVAL = process.env.REFRESH_INTERVAL
+  ? parseInt(process.env.REFRESH_INTERVAL)
+  : 1000 * 600 // 10 min
 app.locals.headers = () => {
   return new Headers({
     cookie: `.AspNet.Cookies=${app.locals.cookie}`,
@@ -52,6 +55,8 @@ app.locals.defaultFetchArgs = () => {
     headers: app.locals.headers(),
   }
 }
+app.locals.cookie = null
+app.locals.currentlyRefreshing = false // gets set to true when the loop starts
 
 // Timestamp to use anywhere
 app.locals.stamp = () => `${new Date().toLocaleTimeString('en-UK')}`

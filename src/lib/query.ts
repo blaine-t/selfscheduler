@@ -1,4 +1,4 @@
-import { app } from '../index'
+import { app } from '..'
 import util from './util'
 
 async function accessToken() {
@@ -28,6 +28,7 @@ async function userInfo(termString: string) {
     }
     throw Error('No matching term code')
   } catch (err) {
+    console.error(err)
     throw Error('User info request invalid')
   }
 }
