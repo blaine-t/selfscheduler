@@ -50,4 +50,9 @@ router.post('/login', async (req, res) => {
   }
 })
 
+// just respond with the current cookie at /cookie
+router.get('/cookie', async (req, res) => {
+  res.send(app.locals.cookie)
+})
+
 export { router }
