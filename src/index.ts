@@ -3,18 +3,20 @@ import express from 'express'
 const app = express()
 const port = process.env.PORT || 42042
 
-// Add proxy api endpoint
+// Set the view engine to EJS, enable url encoded request bodies
+app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: true }))
+
+// Add endpoints
 import { router as api } from './routes/api'
+import { router as root } from './routes/root'
 app.use('/api', api)
+app.use('/', root)
 
 // Source .env
 import 'dotenv/config'
 
-// Check cookie
-if (!process.env.COOKIE) throw Error('No cookie provided')
-
 // Load env variables to app.locals
-app.locals.cookie = process.env.COOKIE
 app.locals.HOST = process.env.HOST || 'https://unl.collegescheduler.com'
 app.locals.USERAGENT =
   process.env.USERAGENT ||
@@ -36,12 +38,6 @@ app.locals.defaultFetchArgs = () => {
 
 // Timestamp to use anywhere
 app.locals.stamp = () => `${new Date().toLocaleTimeString('en-UK')}`
-
-// Import cookie lib to setup keepalive
-import cookie from './lib/cookie'
-
-// Setup the cookie refresher to run every 10 minutes with node-schedule
-cookie.scheduleRefresh()
 
 // Host express server
 app.listen(port, () => {

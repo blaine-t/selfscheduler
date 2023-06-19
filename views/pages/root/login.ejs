@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Login</title>
+  </head>
+
+  <style>
+    #login-failed {
+      color: red;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+
+  <body>
+    <h1>gimme ur session cookie</h1>
+    <form action="/login" method="POST">
+      <label for="cookie">Cookie:</label>
+      <input type="text" id="cookie" name="cookie" required />
+      <button type="submit">Submit</button>
+    </form>
+    <p id="login-failed" class="hidden">Invalid session cookie, try again</p>
+  </body>
+
+  <script type="text/javascript">
+    if (window.location.search.indexOf('failed=true') > -1) {
+      document.getElementById('login-failed').classList.remove('hidden')
+    }
+  </script>
+</html>

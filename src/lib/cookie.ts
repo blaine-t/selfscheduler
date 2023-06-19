@@ -43,4 +43,6 @@ async function checkCookie() {
   return response
 }
 
-export default { scheduleRefresh, extract }
+export { checkCookie, scheduleRefresh }
+
+export default { extract }

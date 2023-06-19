@@ -28,13 +28,7 @@ router.get('/*', async (req, res) => {
   try {
     // Craft and send response to endpoint
     const url = `${req.app.locals.HOST}${req.originalUrl}`
-    const fetchArgs: RequestInit = {
-      method: req.method,
-      redirect: 'manual',
-      body: req.body,
-      headers: app.locals.headers(),
-    }
-    const response = await fetch(url, fetchArgs)
+    const response = await fetch(url, app.locals.defaultFetchArgs())
 
     // Attempt to parse json before sending to avoid double send
     const jsonResponse = await util.checkResponse(response)
