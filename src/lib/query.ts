@@ -15,4 +15,21 @@ async function accessToken() {
   }
 }
 
-export default { accessToken }
+async function userInfo(termString: string) {
+  const url = `${app.locals.HOST}/api/app-data`
+  const response = await fetch(url, app.locals.defaultFetchArgs())
+  try {
+    const jsonResponse = await util.checkResponse(response)
+    const userId = String(jsonResponse['studentUserId'])
+    for (const term of jsonResponse['terms']) {
+      if (term['id'] == termString) {
+        return [userId, term['code']]
+      }
+    }
+    throw Error('No matching term code')
+  } catch (err) {
+    throw Error('User info request invalid')
+  }
+}
+
+export default { accessToken, userInfo }

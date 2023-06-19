@@ -5,11 +5,9 @@ import query from './query'
 
 function connect() {
   // Websocket only because *.collegescheduler.com doesn't support long polling
-  const socket = io(app.locals.WS_HOST, {
+  return io(app.locals.WS_HOST, {
     transports: ['websocket'],
   })
-
-  return socket
 }
 
 async function authorize(socket: SocketIOClient.Socket) {
@@ -27,4 +25,29 @@ async function authorize(socket: SocketIOClient.Socket) {
   )
 }
 
-export default { authorize, connect }
+async function registerCart(termString: string) {
+  const socket = connect()
+  await authorize(socket)
+  const userInfo = await query.userInfo(termString)
+  const request = {
+    subdomain: 'unl',
+    type: 'ENROLL_CART',
+    userId: userInfo[0],
+    termCode: userInfo[1],
+    additionalData: { altPin: '' },
+  }
+  socket.emit('registration-request', request, (registerResponse: object) => {
+    if (JSON.stringify(registerResponse).includes('true')) {
+      socket.on('registration-response', (data: object) => {
+        socket.close()
+        console.log(JSON.stringify(data))
+        // TODO: call notification function
+      })
+    } else {
+      socket.close()
+    }
+    return false
+  })
+}
+
+export default { registerCart }
