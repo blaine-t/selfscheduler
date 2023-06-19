@@ -19,9 +19,11 @@ async function refresh() {
 }
 
 function extract(response: Response) {
-  // if response code is 302, the provided cookie is invalid
-  if (response.status === 302) {
-    throw Error('Provided cookie was invalid, unable to refresh')
+  // if response code is not 200, the provided cookie is invalid
+  if (response.status !== 200) {
+    throw Error(
+      `Provided cookie was invalid with status code ${response.status}, unable to refresh`
+    )
   }
 
   // if no set-cookie header is returned, this cookie isn't old enough to be refreshed

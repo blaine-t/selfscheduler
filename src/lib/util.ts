@@ -1,6 +1,8 @@
 async function checkResponse(response: Response) {
-  if (response.status === 302) {
-    throw Error('Provided cookie was invalid, unable to refresh')
+  if (response.status !== 200) {
+    throw Error(
+      `Provided cookie was invalid with status code ${response.status}`
+    )
   }
   try {
     const jsonResponse = await response.json()
