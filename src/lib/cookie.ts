@@ -10,21 +10,10 @@ function scheduleRefresh() {
 }
 
 async function refresh() {
-  // Craft and send response to endpoint for keepalive
-  const url = `${app.locals.HOST}/api/terms/`
-  const response = await fetch(url, app.locals.defaultFetchArgs())
-
-  // Take out the cookie from the response
-  extract(response)
+  extract(await checkCookie())
 }
 
 function extract(response: Response) {
-  // if response code is not 200, the provided cookie is invalid
-  if (response.status !== 200) {
-    throw Error(
-      `Provided cookie was invalid with status code ${response.status}, unable to refresh`
-    )
-  }
 
   // if no set-cookie header is returned, this cookie isn't old enough to be refreshed
   // so just exit since the cookie's still valid
@@ -38,6 +27,20 @@ function extract(response: Response) {
   console.info(`Refreshed cookie at ${app.locals.stamp()}`)
 }
 
-export { refresh }
+/**
+ * Checks if the app cookie belongs to a valid session by making a request.
+ * Throws an error if the cookie is invalid, returns the response if it is.
+ */
+async function checkCookie() {
+  const url = `${app.locals.HOST}/api/terms/`
+  const response = await fetch(url, app.locals.defaultFetchArgs())
+
+  if (response.status !== 200) {
+    throw Error(
+      `Provided cookie was invalid with status code ${response.status}`
+    )
+  }
+  return response
+}
 
 export default { scheduleRefresh, extract }
