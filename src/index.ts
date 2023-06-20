@@ -19,6 +19,11 @@ app.use((req, res, next) => {
   }
 })
 
+// Static Web Files
+app.use(express.static('public'))
+// Flatten icons to /public for device support reasons
+app.use(express.static('public/icons'))
+
 // Initialize "authentication"
 import auth from './lib/auth'
 app.use(auth.checkAuthentication)
