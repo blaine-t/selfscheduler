@@ -15,7 +15,7 @@ function scheduleRefresh() {
       fails = 0
     } catch (err) {
       fails++
-      console.error(`Refresh failed at ${app.locals.stamp()} - "${err}"`)
+      console.error(`${app.locals.stamp()} Refresh failed - ${err}`)
       // if 3 refresh failures in a row, kill the loop
       if (fails >= 3) {
         console.error(
@@ -60,10 +60,10 @@ function extract(response: Response) {
   // parse out the AspNet cookie string
   app.locals.cookie = setCookie.split('.AspNet.Cookies=')[1].split(';')[0]
   console.info(
-    `Refreshed cookie to ${app.locals.cookie.slice(
+    `${app.locals.stamp()} Refreshed cookie to ${app.locals.cookie.slice(
       0,
       10
-    )}... at ${app.locals.stamp()}`
+    )}...`
   )
   return response
 }

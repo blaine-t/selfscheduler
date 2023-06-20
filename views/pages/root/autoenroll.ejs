@@ -4,17 +4,46 @@
     <title>AutoEnroll</title>
   </head>
 
+  <style>
+    .error {
+      color: red;
+    }
+  </style>
+
   <body>
     <form method="POST">
+      <% if (enrollInterval) { %>
+      <p>
+        Currently making an enroll request every <%= enrollInterval._repeat %>
+        ms
+      </p>
+      <input hidden type="text" name="action" value="clearInterval" />
+      <button type="submit">Stop</button>
+      <% } else { %>
+      <p>Set an interval to repeatedly send enroll requests</p>
       <label for="term">Term:</label>
       <select id="term" name="term">
-        <% terms.forEach(term => { %>
+        <% for (const term of terms) { %>
         <option value="<%= term %>"><%= term %></option>
-        <% }); %>
+        <% } %>
       </select>
-      <label for="interval">Interval (ms)</label>
-      <input type="number" id="interval" name="interval" />
+      <label for="interval">Interval (seconds)</label>
+      <input type="number" id="interval" name="interval" required />
+      <input hidden type="text" name="action" value="setInterval" />
       <button type="submit">Submit</button>
+      <% } %>
     </form>
+    <p id="msg"></p>
   </body>
+
+  <script type="text/javascript">
+    const params = new URL(window.location).searchParams
+    const msgElement = document.getElementById('msg')
+    if (params.get('error')) {
+      msgElement.textContent = params.get('error')
+      msgElement.classList.add('error')
+    } else if (params.get('msg')) {
+      msgElement.textContent = params.get('msg')
+    }
+  </script>
 </html>
