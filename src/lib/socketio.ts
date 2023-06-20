@@ -17,7 +17,6 @@ async function authorize(socket: SocketIOClient.Socket): Promise<void> {
     socket.emit('authorize', { token }, (authResponse: object) => {
       // Check if callback says success true or false
       if (JSON.stringify(authResponse).includes('true')) {
-        console.log('Authorize')
         resolve()
       } else {
         reject(new Error('Authorization failed'))
@@ -29,9 +28,8 @@ async function authorize(socket: SocketIOClient.Socket): Promise<void> {
 async function emit(requestType: string, request: object) {
   const socket = connect()
   await authorize(socket)
-  console.log('emit')
   return new Promise((resolve) => {
-    socket.emit(requestType, request, (callbackResponse: object) => {
+    socket.emit(requestType, request, (callbackResponse: JSON) => {
       resolve(
         listen(
           socket,
@@ -47,29 +45,72 @@ function listen(
   socket: SocketIOClient.Socket,
   responseType: string,
   callbackResponse: object
-): Promise<object> {
+): Promise<string> {
   return new Promise((resolve, reject) => {
     if (JSON.stringify(callbackResponse).includes('true')) {
-      socket.on(responseType, (response: object) => {
+      socket.on(responseType, (response: JSON) => {
         socket.close()
-        console.log(JSON.stringify(response))
         // TODO: Add notifications
-        resolve(response)
+        const returnString = parseAll(responseType, response)
+        console.log(returnString)
+        resolve(returnString)
       })
     } else {
-      reject(new Error())
+      reject(
+        new Error(
+          `${responseType} failed. Response: ${JSON.stringify(
+            callbackResponse
+          )}`
+        )
+      )
       // TODO: Add error notification
     }
   })
 }
 
+function parseAll(responseType: string, response: Record<string, any>) {
+  // Find out what the first key we want to access is
+  let key = ''
+  if (responseType == 'send-to-cart-response') {
+    key = 'sections'
+  } else {
+    key = 'regNumberResponses'
+  }
+  if (responseType == 'swap-response') {
+    return parse(response[key][0])
+  } else {
+    let returnString = ''
+    response[key].forEach((record: any) => {
+      returnString += `${parse(record)}\n\n`
+    })
+    return returnString
+  }
+}
+
+function parse(record: Record<string, any>) {
+  let returnString = `${record['title']}`
+  if (record['topicDescription']) {
+    returnString += `\n${record['topicDescription']}`
+  }
+  if (
+    record['instructors'] &&
+    record['instructors'][0] &&
+    record['instructors'][0]['name']
+  ) {
+    returnString += `\n${record['instructors'][0]['name']}`
+  }
+  returnString += `\n${record['regNumber']} - ${record['subjectCode']}${record['courseNumber']}`
+  returnString += `\n${record['sectionMessages'][0]['message']}`
+  return returnString
+}
+
 async function enroll(termCode: string) {
   const request = {
+    termCode,
     subdomain: app.locals.SUBDOMAIN,
     type: 'ENROLL_CART',
-    termCode,
   }
-  await emit('registration-request', request)
+  return await emit('registration-request', request)
 }
 
 async function drop(
@@ -78,37 +119,37 @@ async function drop(
   academicCareerCode: string
 ) {
   const request = {
+    termCode,
     regNumberRequests: [] as {
       action: string
       regNumber: string
       academicCareerCode: string
     }[],
     subdomain: app.locals.SUBDOMAIN,
-    termCode,
     type: 'EDIT',
   }
   regNumberList.forEach((regNumber) => {
     request.regNumberRequests.push({
-      action: 'DROP',
       regNumber,
       academicCareerCode,
+      action: 'DROP',
     })
   })
-  await emit('registration-request', request)
+  return await emit('registration-request', request)
 }
 
 async function cart(termCode: string, regNumberList: string[]) {
   const request = {
-    nativeCartRequest: true,
-    sections: [] as { regNumber: string; action: string }[],
     termCode,
+    sections: [] as { regNumber: string; action: string }[],
     environment: app.locals.SUBDOMAIN,
+    nativeCartRequest: true,
   }
   // For each combination in classAction add that to be a new section in request
   regNumberList.forEach((regNumber) => {
     request.sections.push({ regNumber, action: 'PUT' })
   })
-  await emit('send-to-cart-request', request)
+  return await emit('send-to-cart-request', request)
 }
 
 export interface ClassInfo {
@@ -136,7 +177,7 @@ async function swap(
     environment: app.locals.SUBDOMAIN,
   }
 
-  await emit('swap-request', request)
+  return await emit('swap-request', request)
 }
 
 async function fastSignup(termCode: string, regNumberList: string[]) {
@@ -144,4 +185,40 @@ async function fastSignup(termCode: string, regNumberList: string[]) {
   await enroll(termCode)
 }
 
-export default { cart, drop, enroll, swap, fastSignup }
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function test() {
+  const termCode = '1238'
+  const regNumberList3 = ['7497', '10458', '2111']
+  const regNumberList2 = ['7497', '10458']
+  const regNumberList1 = ['7497']
+  const academicCareerCode = 'UGRD'
+  const classInfo = {
+    sectionParameterValues: { units: 1, gradingBasis: 'GRD' },
+    regNumber: regNumberList2[1],
+    academicCareerCode,
+  }
+  await cart(termCode, regNumberList3)
+  await delay(15000)
+  await fastSignup(termCode, regNumberList2)
+  await delay(15000)
+  await drop(termCode, regNumberList2, academicCareerCode)
+  await delay(15000)
+  await fastSignup(termCode, regNumberList1)
+  await delay(15000)
+  await swap(termCode, regNumberList1[0], classInfo)
+  await delay(15000)
+  await drop(termCode, [regNumberList2[1]], academicCareerCode)
+  await delay(15000)
+  await fastSignup(termCode, regNumberList3)
+  await delay(15000)
+  await drop(termCode, regNumberList3, academicCareerCode)
+}
+
+async function customTest() {
+  // Add socketio code to test here
+}
+
+export default { cart, drop, enroll, swap, fastSignup, test, customTest }
