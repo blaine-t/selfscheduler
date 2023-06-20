@@ -27,13 +27,6 @@
 </body>
 
 <script type="text/javascript">
-  if (window.location.search.indexOf('failed=true') > -1) {
-    document.getElementById('login-failed').classList.remove('hidden')
-  }
-</script>
-
-</html>
-<script type="text/javascript">
   const params = new URL(window.location).searchParams
   if (params.get('failed') === 'true') {
     document.getElementById('login-failed').classList.remove('hidden')
