@@ -1,8 +1,6 @@
 import { Router } from 'express'
 
-import cookie from '../lib/cookie'
 import util from '../lib/util'
-import { app } from '..'
 
 const router = Router()
 
