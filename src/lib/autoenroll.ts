@@ -1,5 +1,4 @@
 import { app } from '..'
-import interval from 'interval-promise'
 import socketio from './socketio'
 
 /**
@@ -7,18 +6,20 @@ import socketio from './socketio'
  * @param termCode
  * @param ms
  */
-function enrollInterval(termCode: string, ms: number) {
-  console.log(`Setting interval to enroll every ${ms} ms`)
-  interval(async () => {
-    try {
-      await socketio.enroll(termCode)
-      console.log(`Enrollment attempt successful at ${app.locals.stamp()}`)
-    } catch (err) {
-      console.error(
-        `Enrollment attempt failed at ${app.locals.stamp()} - ${err}`
-      )
-    }
-  }, ms)
+function setEnrollInterval(termCode: string, ms: number) {
+  console.log(`${app.locals.stamp()} Setting interval to enroll every ${ms} ms`)
+  // setInterval doesn't call the function initially so we do that ourselves
+  enrollRequest(termCode)
+  app.locals.enrollInterval = setInterval(() => enrollRequest(termCode), ms)
 }
 
-export default { enrollInterval }
+async function enrollRequest(termCode: string) {
+  try {
+    await socketio.enroll(termCode)
+    console.log(`${app.locals.stamp()} Enrollment attempt successful`)
+  } catch (err) {
+    console.error(`${app.locals.stamp()} Enrollment attempt failed - ${err}`)
+  }
+}
+
+export default { setEnrollInterval }
