@@ -64,6 +64,7 @@ app.locals.cookie = null
 app.locals.currentlyRefreshing = false // gets set to true when the loop starts
 app.locals.terms = app.locals.termCodes = []
 app.locals.clients = []
+app.locals.scheduledEnrollments = []
 
 // Timestamp to use anywhere
 app.locals.stamp = () => `${new Date().toLocaleTimeString('en-UK')}`

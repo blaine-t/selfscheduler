@@ -1,16 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>AutoEnroll</title>
-  </head>
 
-  <style>
-    .error {
-      color: red;
-    }
-  </style>
+<head>
+  <title>AutoEnroll</title>
+  <%- include('../../components/head'); %>
+  <script src="/js/sse.js" async></script>
+</head>
 
-  <body>
+<style>
+  .error {
+    color: red;
+  }
+
+  .toggle {
+    display: none;
+  }
+</style>
+
+<body>
+  <form autocomplete="off">
+    <label for="tab1">Interval</label>
+    <input type="radio" id="tab1" name="tabs" onclick="toggle('intervalForm')" />
+    <label for="tab2">Scheduler</label>
+    <input type="radio" id="tab2" name="tabs" onclick="toggle('schedulerForm')" />
+  </form>
+  <div id="intervalForm" class="toggle">
     <form method="POST">
       <% if (enrollInterval) { %>
       <p>
@@ -33,17 +47,53 @@
       <button type="submit">Submit</button>
       <% } %>
     </form>
-    <p id="msg"></p>
-  </body>
+  </div>
+  <div id="schedulerForm" class="toggle">
+    <form method="POST">
+      <p>
+        Schedule a date and time to make an enroll request (make sure your
+        classes are in the shopping cart already)
+      </p>
+      <label for="term">Term:</label>
+      <select id="term" name="term">
+        <% for (const term of terms) { %>
+        <option value="<%= term %>"><%= term %></option>
+        <% } %>
+      </select>
+      <input type="datetime-local" name="datetime" required />
+      <input hidden type="text" name="action" value="schedule" />
+      <button type="submit">Submit</button>
+    </form>
+    <% if (scheduledEnrollments.length > 0) { %>
+    <p>Current scheduled enrollments:</p>
+    <ul>
+      <% for (const timestamp of scheduledEnrollments) { %>
+      <li><%= new Date(timestamp).toString() %></li>
+      <% } %>
+    </ul>
+    <% } %>
+  </div>
+  <p id="msg"></p>
+</body>
 
-  <script type="text/javascript">
-    const params = new URL(window.location).searchParams
-    const msgElement = document.getElementById('msg')
-    if (params.get('error')) {
-      msgElement.textContent = params.get('error')
-      msgElement.classList.add('error')
-    } else if (params.get('msg')) {
-      msgElement.textContent = params.get('msg')
-    }
-  </script>
+<script type="text/javascript">
+  function toggle(id) {
+    document
+      .querySelectorAll('.toggle')
+      .forEach((element) => (element.style.display = 'none'))
+    document.getElementById(id).style.display = 'block'
+  }
+  const params = new URL(window.location).searchParams
+  const msgElement = document.getElementById('msg')
+  if (params.get('error')) {
+    msgElement.textContent = params.get('error')
+    msgElement.classList.add('error')
+  } else if (params.get('msg')) {
+    msgElement.textContent = params.get('msg')
+  }
+  if (params.get('tab')) {
+    document.getElementById('tab' + params.get('tab'))?.click()
+  }
+</script>
+
 </html>

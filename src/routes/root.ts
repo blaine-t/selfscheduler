@@ -34,7 +34,7 @@ router.post('/login', async (req, res) => {
     res.redirect('/')
   } else {
     // otherwise, login failed, unset cookie
-    console.log('failed login due to invalid cookie')
+    console.warn('failed login due to invalid cookie')
     app.locals.cookie = null
     res.redirect('/login?failed=true')
   }
@@ -50,49 +50,12 @@ router.get('/autoenroll', async (req, res) => {
   res.render('pages/root/autoenroll.ejs', {
     terms: app.locals.terms,
     enrollInterval: app.locals.enrollInterval,
+    scheduledEnrollments: app.locals.scheduledEnrollments,
   })
 })
 
 // handles requests to setup automatic scheduled enrollment attempts
-router.post('/autoenroll', async (req, res) => {
-  switch (req.body.action) {
-    case 'clearInterval': {
-      console.log(`${app.locals.stamp()} Clearing current enrollment interval`)
-      clearInterval(app.locals.enrollInterval)
-      app.locals.enrollInterval = null
-      res.redirect('/autoenroll')
-      break
-    }
-    case 'setInterval': {
-      const term = req.body.term
-      const interval = parseInt(req.body.interval) * 1000 // convert from seconds to ms
-      if (!term || isNaN(interval)) {
-        res.redirect('/autoenroll?error=Invalid request')
-        break
-      }
-      // ensure the interval isn't too short
-      if (interval < 15000) {
-        res.redirect(
-          '/autoenroll?error=Interval must be greater than 15 seconds'
-        )
-        break
-      }
-      // the post request expects the term string e.g. "Fall 2023"
-      // we need to convert it to the term code e.g. 1238
-      const termIndex = app.locals.terms.indexOf(term)
-      if (termIndex === -1) {
-        // this shouldn't be possible when term is a dropdown, but we'll handle it anyway
-        res.redirect('/autoenroll?error=Invalid term')
-        break
-      }
-      const termCode = app.locals.termCodes[termIndex]
-
-      autoenroll.setEnrollInterval(termCode, interval)
-      res.redirect('/autoenroll')
-      break
-    }
-  }
-})
+router.post('/autoenroll', autoenroll.postRequest)
 
 // NOTIFICATION
 router.get('/sse', (req, res) => {
