@@ -1,34 +1,28 @@
-import { Request, Response as ExpressResponse, NextFunction } from 'express'
 import { app } from '..'
+import cookie from './cookie'
 
-async function checkResponse(response: Response) {
+async function requestJson(endpoint: string) {
+  const response = await fetch(
+    `${app.locals.HOST}${endpoint}`,
+    app.locals.defaultFetchArgs()
+  )
   if (response.status !== 200) {
     throw Error(
       `Provided cookie was invalid with status code ${response.status}`
     )
   }
+  // Extract the set-cookie header and update the cookie if possible
+  cookie.extract(response)
   return await response.json()
 }
 
-/**
- * Middleware for protected routes, redirects to /login if a cookie isn't set yet
- * @param req
- * @param res
- * @param next
- */
-function checkAuthentication(
-  req: Request,
-  res: ExpressResponse,
-  next: NextFunction
-) {
-  if (app.locals.cookie && req.originalUrl.split('?')[0] === '/login') {
-    res.redirect('/')
-  } else if (app.locals.cookie || req.originalUrl.split('?')[0] === '/login') {
-    next()
-  } else {
-    res.redirect('/login')
+function getByValue(map: Map<unknown, unknown>, searchValue: unknown) {
+  for (const [key, value] of map.entries()) {
+    if (value === searchValue) {
+      return key
+    }
   }
+  return null
 }
 
-export { checkAuthentication }
-export default { checkResponse }
+export default { requestJson, getByValue }

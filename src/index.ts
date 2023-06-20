@@ -20,8 +20,8 @@ app.use((req, res, next) => {
 })
 
 // Initialize "authentication"
-import { checkAuthentication } from './lib/util'
-app.use(checkAuthentication)
+import auth from './lib/auth'
+app.use(auth.checkAuthentication)
 
 // Add endpoints
 import { router as api } from './routes/api'
@@ -41,7 +41,7 @@ app.locals.SUBDOMAIN = process.env.SUBDOMAIN || 'unl'
 app.locals.HOST = `https://${app.locals.SUBDOMAIN}.collegescheduler.com`
 app.locals.REFRESH_INTERVAL = process.env.REFRESH_INTERVAL
   ? parseInt(process.env.REFRESH_INTERVAL)
-  : 1000 * 600 // 10 min
+  : 1000 * 1200 // 20 min
 app.locals.headers = () => {
   return new Headers({
     cookie: `.AspNet.Cookies=${app.locals.cookie}`,
@@ -57,6 +57,7 @@ app.locals.defaultFetchArgs = () => {
 }
 app.locals.cookie = null
 app.locals.currentlyRefreshing = false // gets set to true when the loop starts
+app.locals.terms = app.locals.termCodes = []
 
 // Timestamp to use anywhere
 app.locals.stamp = () => `${new Date().toLocaleTimeString('en-UK')}`

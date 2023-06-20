@@ -12,6 +12,7 @@ function listEndpoints() {
 <a href="/api/terms/Fall 2023/courses">terms/:term/courses</a> <br>
 <a href="/api/term-data/Fall 2023">term-data/:term</a> <br>
 <a href="/api/app-data">app-data</a> <br>
+<a href="/api/oauth/student/client-credentials/token">oauth/student/client-credentials/token</a> <br>
 `
 }
 
@@ -27,16 +28,10 @@ router.get('/*', async (req, res) => {
     return
   }
   try {
-    // Craft and send response to endpoint
-    const url = `${req.app.locals.HOST}${req.originalUrl}`
-    const response = await fetch(url, app.locals.defaultFetchArgs())
-
-    // Attempt to parse json before sending to avoid double send
-    const jsonResponse = await util.checkResponse(response)
-    // Send response to client
+    // Request the real endpoint and get the JSON response
+    const jsonResponse = await util.requestJson(req.originalUrl)
+    // Send server response back to client
     res.send(jsonResponse)
-    // Attempt to extract the set-cookie if there is one from the response
-    cookie.extract(response)
   } catch (err) {
     console.error(err)
     res.sendStatus(502)

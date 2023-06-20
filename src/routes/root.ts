@@ -1,22 +1,12 @@
 import { Router } from 'express'
 import { app } from '..'
 import cookie from '../lib/cookie'
-import util from '../lib/util'
+import auth from '../lib/auth'
 const router = Router()
 
 router.get('/', async (req, res) => {
-  const response = await fetch(
-    `${app.locals.HOST}/api/terms`,
-    app.locals.defaultFetchArgs()
-  )
-  const jsonResponse = await util.checkResponse(response)
-  // extract term strings from the jsonResponse (e.g. 'Fall 2023')
-  const terms: Array<string> = jsonResponse.map(
-    (term: { id: string }) => term.id
-  )
-  // const terms = ['Summer 2023', 'Fall 2023']
   res.render('pages/root/index.ejs', {
-    terms,
+    terms: app.locals.terms,
   })
 })
 
@@ -37,11 +27,7 @@ router.post('/login', async (req, res) => {
   }
 
   if (valid) {
-    // if the cookie is valid, schedule refreshes and redirect to /
-    console.log(
-      'successful login, proxy is now available and cookie will now be refreshed'
-    )
-    cookie.scheduleRefresh()
+    await auth.login()
     res.redirect('/')
   } else {
     // otherwise, login failed, unset cookie

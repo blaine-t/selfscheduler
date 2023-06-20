@@ -34,10 +34,11 @@ function scheduleRefresh() {
  * Also sets app.locals.accessToken, for any socketIO requests to use
  */
 async function refresh() {
-  // extract set-cookie header from an API response,
+  // extract set-cookie header from an API response, if it exists
   const response = extract(await checkCookie())
   // errors out if the request fails, so now we can set the accessToken from the response
   const jsonResponse = response.json()
+  // we can only do this line because checkCookie specifically calls the token endpoint
   app.locals.accessToken =
     'accessToken' in jsonResponse ? jsonResponse['accessToken'] : null
 }

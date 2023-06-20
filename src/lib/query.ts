@@ -1,12 +1,10 @@
-import { app } from '..'
 import util from './util'
 
 async function accessToken() {
-  const url = `${app.locals.HOST}/api/oauth/student/client-credentials/token`
-  const response = await fetch(url, app.locals.defaultFetchArgs())
-
   try {
-    const jsonResponse = await util.checkResponse(response)
+    const jsonResponse = await util.requestJson(
+      '/api/oauth/student/client-credentials/token'
+    )
     const accessToken = jsonResponse['accessToken']
     return accessToken
   } catch (err) {
@@ -16,10 +14,8 @@ async function accessToken() {
 }
 
 async function userInfo(termString: string) {
-  const url = `${app.locals.HOST}/api/app-data`
-  const response = await fetch(url, app.locals.defaultFetchArgs())
   try {
-    const jsonResponse = await util.checkResponse(response)
+    const jsonResponse = await util.requestJson('/api/app-data')
     const userId = String(jsonResponse['studentUserId'])
     for (const term of jsonResponse['terms']) {
       if (term['id'] == termString) {
