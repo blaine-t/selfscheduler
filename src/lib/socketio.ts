@@ -2,6 +2,7 @@ import io from 'socket.io-client'
 
 import { app } from '../index'
 import query from './query'
+import util from './util'
 
 function connect() {
   // Websocket only because api.collegescheduler.com doesn't support long polling
@@ -47,15 +48,14 @@ function listen(
   socket: SocketIOClient.Socket,
   responseType: string,
   callbackResponse: object
-): Promise<string> {
+): Promise<string[]> {
   return new Promise((resolve, reject) => {
     if (JSON.stringify(callbackResponse).includes('true')) {
       socket.on(responseType, (response: JSON) => {
         socket.close()
-        // TODO: Add notifications
-        const returnString = parseAll(responseType, response)
-        console.log(returnString)
-        resolve(returnString)
+        const returnArray = parseAll(responseType, response)
+        util.sendNotification(returnArray)
+        resolve(returnArray)
       })
     } else {
       reject(
@@ -78,31 +78,27 @@ function parseAll(responseType: string, response: Record<string, any>) {
   } else {
     key = 'regNumberResponses'
   }
-  if (responseType == 'swap-response') {
-    return parse(response[key][0])
-  } else {
-    let returnString = ''
-    response[key].forEach((record: any) => {
-      returnString += `${parse(record)}\n\n`
-    })
-    return returnString
-  }
+  const notification: string[] = []
+  response[key].forEach((record: any) => {
+    notification.push(parse(record))
+  })
+  return notification
 }
 
 function parse(record: Record<string, any>) {
   let returnString = `${record['title']}`
   if (record['topicDescription']) {
-    returnString += `\n${record['topicDescription']}`
+    returnString += `💀${record['topicDescription']}`
   }
   if (
     record['instructors'] &&
     record['instructors'][0] &&
     record['instructors'][0]['name']
   ) {
-    returnString += `\n${record['instructors'][0]['name']}`
+    returnString += `💀${record['instructors'][0]['name']}`
   }
-  returnString += `\n${record['regNumber']} - ${record['subjectCode']}${record['courseNumber']}`
-  returnString += `\n${record['sectionMessages'][0]['message']}`
+  returnString += `💀${record['regNumber']} - ${record['subjectCode']}${record['courseNumber']}`
+  returnString += `💀${record['sectionMessages'][0]['message']}✨${record['sectionMessages'][0]['severity']}`
   return returnString
 }
 

@@ -52,6 +52,22 @@ router.get('/autoenroll', async (req, res) => {
   })
 })
 
+// NOTIFICATION
+router.get('/sse', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream')
+  res.setHeader('Cache-Control', 'no-cache')
+  res.setHeader('Connection', 'keep-alive')
+  res.write('data: Welcome to the SSE server!\n\n')
+  app.locals.clients.push(res)
+
+  req.on('close', () => {
+    const index = app.locals.clients.indexOf(res)
+    if (index > -1) {
+      app.locals.clients.splice(index, 1)
+    }
+  })
+})
+
 // handles requests to setup automatic scheduled enrollment attempts
 router.post('/autoenroll', async (req, res) => {
   const term = req.body.term

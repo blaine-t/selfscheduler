@@ -24,10 +24,10 @@ import auth from './lib/auth'
 app.use(auth.checkAuthentication)
 
 // Add endpoints
-import { router as api } from './routes/api'
-import { router as root } from './routes/root'
-app.use('/api', api)
-app.use('/', root)
+import { router as apiRouter } from './routes/api'
+import { router as rootRouter } from './routes/root'
+app.use('/api', apiRouter)
+app.use('/', rootRouter)
 
 // Source .env
 import 'dotenv/config'
@@ -58,6 +58,7 @@ app.locals.defaultFetchArgs = () => {
 app.locals.cookie = null
 app.locals.currentlyRefreshing = false // gets set to true when the loop starts
 app.locals.terms = app.locals.termCodes = []
+app.locals.clients = []
 
 // Timestamp to use anywhere
 app.locals.stamp = () => `${new Date().toLocaleTimeString('en-UK')}`

@@ -1,5 +1,6 @@
 import { app } from '..'
 import cookie from './cookie'
+import { Response as ExpressResponse } from 'express'
 
 async function requestJson(endpoint: string) {
   const response = await fetch(
@@ -25,4 +26,14 @@ function getByValue(map: Map<unknown, unknown>, searchValue: unknown) {
   return null
 }
 
-export default { requestJson, getByValue }
+// Send notifications to all connected clients
+function sendNotification(notifications: string[]) {
+  app.locals.clients.forEach((client: ExpressResponse) => {
+    notifications.forEach((notification) => {
+      client.write('event: notification\n')
+      client.write(`data: ${notification}\n\n`)
+    })
+  })
+}
+
+export default { requestJson, getByValue, sendNotification }

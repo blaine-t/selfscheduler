@@ -1,51 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Home</title>
-  </head>
 
-  <body>
-    <p>
-      cookie will be continually refreshed from now on, view the current cookie
-      <a href="/cookie">here</a>
-    </p>
-    <p>check out the <a href="/api/">proxy</a></p>
-    <form class="search-class-code">
-      <label for="class-code">Class code:</label>
-      <input type="text" id="class-code" name="class-code" />
-      <label for="term">Term:</label>
-      <select id="term" name="term">
-        <% terms.forEach(term => { %>
-        <option value="<%= term %>"><%= term %></option>
-        <% }); %>
-      </select>
-      <button type="submit">Search</button>
-      <p id="output"></p>
-    </form>
-  </body>
+<head>
+  <title>Home</title>
+</head>
 
-  <script type="text/javascript">
-    document
-      .querySelector('form.search-class-code')
-      .addEventListener('submit', (e) => {
-        event.preventDefault()
-        const data = Object.fromEntries(new FormData(e.target).entries())
-        const classCode = data['class-code']
-        const term = data['term']
-        fetch(`/api/terms/${term}/regblocks/?registrationNumber=${classCode}`)
-          .then((response) => response.json())
-          .then((data) => {
-            const output = document.getElementById('output')
-            if ('sections' in data && data['sections'].length !== 0) {
-              output.textContent =
-                'i will parse this json later I promise ' + JSON.stringify(data)
-              output.style.color = 'black'
-            } else {
-              // request failed, either a bad class code or a bad term somehow
-              output.textContent = 'Invalid class code'
-              output.style.color = 'red'
-            }
-          })
-      })
-  </script>
+<body>
+  <p>
+    cookie will be continually refreshed from now on, view the current cookie
+    <a href="/cookie">here</a>
+  </p>
+  <p>check out the <a href="/api/">proxy</a></p>
+  <form class="search-class-code">
+    <label for="class-code">Class code:</label>
+    <input type="text" id="class-code" name="class-code" />
+    <label for="term">Term:</label>
+    <select id="term" name="term">
+      <% terms.forEach(term=> { %>
+      <option value="<%= term %>">
+        <%= term %>
+      </option>
+      <% }); %>
+    </select>
+    <button type="submit">Search</button>
+    <p id="output"></p>
+  </form>
+</body>
+
+<script type="text/javascript">
+  document
+    .querySelector('form.search-class-code')
+    .addEventListener('submit', (e) => {
+      event.preventDefault()
+      const data = Object.fromEntries(new FormData(e.target).entries())
+      const classCode = data['class-code']
+      const term = data['term']
+      fetch(`/api/terms/${term}/regblocks/?registrationNumber=${classCode}`)
+        .then((response) => response.json())
+        .then((data) => {
+          const output = document.getElementById('output')
+          if ('sections' in data && data['sections'].length !== 0) {
+            output.textContent =
+              'i will parse this json later I promise ' + JSON.stringify(data)
+            output.style.color = 'black'
+          } else {
+            // request failed, either a bad class code or a bad term somehow
+            output.textContent = 'Invalid class code'
+            output.style.color = 'red'
+          }
+        })
+    })
+
+  const eventSource = new EventSource('/sse');
+
+  eventSource.addEventListener('notification', (event) => {
+    const message = event.data;
+    console.log(message.replaceAll('💀', '\n'))
+  });
+</script>
+
 </html>
