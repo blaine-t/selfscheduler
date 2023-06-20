@@ -31,23 +31,29 @@ function scheduleRefresh() {
 
 /**
  * Attempts to update app.locals.cookie with a new cookie from the server
+ * Also sets app.locals.accessToken, for any socketIO requests to use
  */
 async function refresh() {
-  extract(await checkCookie())
+  // extract set-cookie header from an API response,
+  const response = extract(await checkCookie())
+  // errors out if the request fails, so now we can set the accessToken from the response
+  const jsonResponse = response.json()
+  app.locals.accessToken =
+    'accessToken' in jsonResponse ? jsonResponse['accessToken'] : null
 }
 
 /**
  * Updates the app cookie by extracting a new one from the Set-Cookie
  * header of a response to an authenticated server request.
  * @param response
- * @returns
+ * @returns the same response
  */
 function extract(response: Response) {
   // if no set-cookie header is returned, this cookie isn't old enough to be refreshed
   // so just exit since the cookie's still valid
   const setCookie = response.headers.get('set-cookie')
   if (!setCookie) {
-    return
+    return response
   }
 
   // parse out the AspNet cookie string
@@ -58,6 +64,7 @@ function extract(response: Response) {
       10
     )}... at ${app.locals.stamp()}`
   )
+  return response
 }
 
 /**
@@ -65,7 +72,8 @@ function extract(response: Response) {
  * Throws an error if the cookie is invalid, returns the response if it is.
  */
 async function checkCookie() {
-  const url = `${app.locals.HOST}/api/terms/`
+  // this URL can be any /api endpoint, this uses the token endpoint to get the token too if you want it
+  const url = `${app.locals.HOST}/api/oauth/student/client-credentials/token`
   const response = await fetch(url, app.locals.defaultFetchArgs())
 
   if (response.status !== 200) {

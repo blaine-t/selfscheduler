@@ -12,7 +12,9 @@ function connect() {
 }
 
 async function authorize(socket: SocketIOClient.Socket): Promise<void> {
-  const token = await query.accessToken()
+  const token = app.locals.accessToken
+    ? app.locals.accessToken
+    : await query.accessToken()
   return new Promise((resolve, reject) => {
     socket.emit('authorize', { token }, (authResponse: object) => {
       // Check if callback says success true or false
