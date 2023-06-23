@@ -1,4 +1,6 @@
+// Import Request, Response for type-safety
 import { Request, Response } from 'express'
+
 import { app } from '..'
 import socketio from './socketio'
 
@@ -6,9 +8,10 @@ async function postRequest(req: Request, res: Response) {
   switch (req.body.action) {
     // these two are for the enrollment interval form
     case 'clearInterval': {
-      console.log(`${app.locals.stamp()} Clearing current enrollment interval`)
+      console.info(`${app.locals.stamp()} Clearing current enrollment interval`)
       clearInterval(app.locals.enrollInterval)
       app.locals.enrollInterval = null
+      // tab dictates redirect to interval or scheduler
       res.redirect('/autoenroll?tab=1')
       break
     }
@@ -74,7 +77,9 @@ async function postRequest(req: Request, res: Response) {
  * @param ms
  */
 function setEnrollInterval(termCode: string, ms: number) {
-  console.log(`${app.locals.stamp()} Setting interval to enroll every ${ms} ms`)
+  console.info(
+    `${app.locals.stamp()} Setting interval to enroll every ${ms} ms`
+  )
   // setInterval doesn't call the function initially so we do that ourselves
   enrollRequest(termCode)
   app.locals.enrollInterval = setInterval(() => enrollRequest(termCode), ms)
@@ -86,7 +91,7 @@ function setEnrollInterval(termCode: string, ms: number) {
  * @param timestamp - unix timestamp in ms
  */
 function scheduleEnroll(termCode: string, timestamp: number) {
-  console.log(
+  console.info(
     `${app.locals.stamp()} Scheduling an enroll request for ${new Date(
       timestamp
     )}`
@@ -111,7 +116,7 @@ function scheduleEnroll(termCode: string, timestamp: number) {
 async function enrollRequest(termCode: string) {
   try {
     await socketio.enroll(termCode)
-    console.log(`${app.locals.stamp()} Enrollment attempt successful`)
+    console.info(`${app.locals.stamp()} Enrollment attempt successful`)
   } catch (err) {
     console.error(`${app.locals.stamp()} Enrollment attempt failed - ${err}`)
   }

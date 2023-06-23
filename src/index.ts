@@ -46,7 +46,9 @@ app.locals.SUBDOMAIN = process.env.SUBDOMAIN || 'unl'
 app.locals.HOST = `https://${app.locals.SUBDOMAIN}.collegescheduler.com`
 app.locals.REFRESH_INTERVAL = process.env.REFRESH_INTERVAL
   ? parseInt(process.env.REFRESH_INTERVAL)
-  : 1000 * 1200 // 20 min
+  : 1000 * 60 * 20 // 20 min
+
+// Functions to generate info needed for fetch requests
 app.locals.headers = () => {
   return new Headers({
     cookie: `.AspNet.Cookies=${app.locals.cookie}`,
@@ -60,14 +62,16 @@ app.locals.defaultFetchArgs = () => {
     headers: app.locals.headers(),
   }
 }
+
+// Timestamp to use anywhere
+app.locals.stamp = () => `${new Date().toLocaleTimeString('en-UK')}`
+
+// Data for auto refresh
 app.locals.cookie = null
 app.locals.currentlyRefreshing = false // gets set to true when the loop starts
 app.locals.terms = app.locals.termCodes = []
 app.locals.clients = []
 app.locals.scheduledEnrollments = []
-
-// Timestamp to use anywhere
-app.locals.stamp = () => `${new Date().toLocaleTimeString('en-UK')}`
 
 // Host express server
 app.listen(port, () => {

@@ -4,6 +4,7 @@ import { app } from '../index'
 import query from './query'
 import util from './util'
 
+// Initialize connection to socket.io server
 function connect() {
   // Websocket only because api.collegescheduler.com doesn't support long polling
   const socket = io(app.locals.WS_HOST, {
@@ -12,6 +13,7 @@ function connect() {
   return socket
 }
 
+// Send access token to the server to authenticate websocket
 async function authorize(socket: SocketIOClient.Socket): Promise<void> {
   const token = app.locals.accessToken
     ? app.locals.accessToken
@@ -28,11 +30,13 @@ async function authorize(socket: SocketIOClient.Socket): Promise<void> {
   })
 }
 
+// Emits the data to the socket required for the given request
 async function emit(requestType: string, request: object) {
   const socket = connect()
   await authorize(socket)
   return new Promise((resolve) => {
     socket.emit(requestType, request, (callbackResponse: JSON) => {
+      console.info(`${app.locals.stamp()} ${requestType} sent`)
       resolve(
         listen(
           socket,
@@ -44,6 +48,7 @@ async function emit(requestType: string, request: object) {
   })
 }
 
+// Listens for the callback after data is emitted to the socket
 function listen(
   socket: SocketIOClient.Socket,
   responseType: string,
@@ -70,6 +75,7 @@ function listen(
   })
 }
 
+// Parses all of the JSON data returned from the callback
 function parseAll(responseType: string, response: Record<string, any>) {
   // Find out what the first key we want to access is
   let key = ''
@@ -85,6 +91,7 @@ function parseAll(responseType: string, response: Record<string, any>) {
   return notification
 }
 
+// Parses individual items of the JSON data from the callback
 function parse(record: Record<string, any>) {
   let returnString = `${record['title']}`
   if (record['topicDescription']) {
@@ -102,6 +109,7 @@ function parse(record: Record<string, any>) {
   return returnString
 }
 
+// Attempts to enroll all classes in the shopping cart
 async function enroll(termCode: string) {
   const request = {
     termCode,
@@ -111,6 +119,7 @@ async function enroll(termCode: string) {
   return await emit('registration-request', request)
 }
 
+// Drops a class that a student is currently enrolled in
 async function drop(
   termCode: string,
   regNumberList: string[],
@@ -135,7 +144,11 @@ async function drop(
   })
   return await emit('registration-request', request)
 }
-
+/*
+  Adds or removes items from the cart
+  (Cart is not persistent for some stupid reason 
+  so you just put what classes you want and had in the cart previously)
+*/
 async function cart(termCode: string, regNumberList: string[]) {
   const request = {
     termCode,
@@ -150,6 +163,7 @@ async function cart(termCode: string, regNumberList: string[]) {
   return await emit('send-to-cart-request', request)
 }
 
+// Interface used to send class to swap in for swap
 export interface ClassInfo {
   sectionParameterValues: {
     units: number
@@ -159,6 +173,8 @@ export interface ClassInfo {
   academicCareerCode: string
 }
 
+// Swaps a new class in for an existing class
+// Will not remove old class if new class not available
 async function swap(
   termCode: string,
   dropRegNumber: string,
@@ -178,11 +194,13 @@ async function swap(
   return await emit('swap-request', request)
 }
 
+// Immediately adds to cart and attempts to enroll the cart for fastest enrolling
 async function fastSignup(termCode: string, regNumberList: string[]) {
   await cart(termCode, regNumberList)
   await enroll(termCode)
 }
 
+// All functions below this line are to test functions to ensure support
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }

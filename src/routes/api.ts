@@ -1,8 +1,8 @@
+// Import router so it can export routes back to index
 import { Router } from 'express'
+const router = Router()
 
 import util from '../lib/util'
-
-const router = Router()
 
 function listEndpoints() {
   return `

@@ -1,6 +1,7 @@
 {
   "prettier.prettierPath": "node_modules/prettier",
   "cSpell.words": [
+    "autoenroll",
     "selfscheduler"
   ],
 }

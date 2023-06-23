@@ -1,4 +1,6 @@
+// Import Response as ExpressResponse because of conflict with fetch Response type
 import { Request, Response as ExpressResponse, NextFunction } from 'express'
+
 import { app } from '..'
 import util from './util'
 import cookie from './cookie'
@@ -28,7 +30,7 @@ function checkAuthentication(
  */
 async function login() {
   // if the cookie is valid, schedule refreshes and redirect to /
-  console.log(
+  console.info(
     'successful login, proxy is now available and cookie will now be refreshed'
   )
   cookie.scheduleRefresh()

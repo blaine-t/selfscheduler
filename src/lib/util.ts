@@ -1,7 +1,10 @@
-import { app } from '..'
-import cookie from './cookie'
+// Import Response as ExpressResponse because of conflict with fetch Response type
 import { Response as ExpressResponse } from 'express'
 
+import { app } from '..'
+import cookie from './cookie'
+
+// Automatically error handles requesting the JSON of a URL
 async function requestJson(endpoint: string) {
   const response = await fetch(
     `${app.locals.HOST}${endpoint}`,
@@ -17,6 +20,7 @@ async function requestJson(endpoint: string) {
   return await response.json()
 }
 
+// Not in use currently
 function getByValue(map: Map<unknown, unknown>, searchValue: unknown) {
   for (const [key, value] of map.entries()) {
     if (value === searchValue) {

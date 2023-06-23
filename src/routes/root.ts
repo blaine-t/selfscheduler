@@ -1,9 +1,11 @@
+// Import router so it can export routes back to index
 import { Router } from 'express'
+const router = Router()
+
 import { app } from '..'
 import cookie from '../lib/cookie'
 import auth from '../lib/auth'
 import autoenroll from '../lib/autoenroll'
-const router = Router()
 
 // INDEX
 router.get('/', async (req, res) => {

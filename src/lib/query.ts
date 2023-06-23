@@ -1,5 +1,6 @@
 import util from './util'
 
+// Fetches the access token from the api
 async function accessToken() {
   try {
     const jsonResponse = await util.requestJson(
@@ -13,6 +14,7 @@ async function accessToken() {
   }
 }
 
+// Not in use currently but fetches user info from the api
 async function userInfo(termString: string) {
   try {
     const jsonResponse = await util.requestJson('/api/app-data')
