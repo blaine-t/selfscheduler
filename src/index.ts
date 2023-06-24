@@ -48,6 +48,11 @@ app.locals.REFRESH_INTERVAL = process.env.REFRESH_INTERVAL
   ? parseInt(process.env.REFRESH_INTERVAL)
   : 1000 * 60 * 20 // 20 min
 
+// Non-required rmp schoolId import
+if (process.env.rmpSchoolId) {
+  app.locals.rmpSchoolID = process.env.rmpSchoolID
+}
+
 // Functions to generate info needed for fetch requests
 app.locals.headers = () => {
   return new Headers({

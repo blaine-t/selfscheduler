@@ -6,6 +6,7 @@ import { app } from '..'
 import cookie from '../lib/cookie'
 import auth from '../lib/auth'
 import autoenroll from '../lib/autoenroll'
+import rmp from '../lib/rmp'
 
 // INDEX
 router.get('/', async (req, res) => {
@@ -73,6 +74,27 @@ router.get('/sse', (req, res) => {
       app.locals.clients.splice(index, 1)
     }
   })
+})
+
+// RMP
+router.get('/rmp', async (req, res) => {
+  // Grab school ID if it hasn't been already
+  if (!app.locals.rmpSchoolID) {
+    await rmp.schoolID()
+  }
+  // Make sure the request has a professors name
+  if (!req.query.name) {
+    console.warn('No professor name provided')
+    res.sendStatus(204) // No content
+    return
+  }
+  // Send the results of the RMP call to find data on the professor
+  const rmpResponse = await rmp.getProfessorStats(String(req.query.name))
+  if (rmpResponse == null) {
+    res.sendStatus(502)
+  } else {
+    res.send(rmpResponse)
+  }
 })
 
 export { router }
