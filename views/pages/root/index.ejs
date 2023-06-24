@@ -13,45 +13,59 @@
     <a href="/cookie">here</a>
   </p>
   <p>check out the <a href="/api/">proxy</a></p>
-  <form class="search-class-code">
-    <label for="class-code">Class code:</label>
-    <input type="text" id="class-code" name="class-code" />
-    <label for="term">Term:</label>
-    <select id="term" name="term">
-      <% terms.forEach(term=> { %>
-      <option value="<%= term %>">
-        <%= term %>
-      </option>
-      <% }); %>
-    </select>
-    <button type="submit">Search</button>
-    <p id="output"></p>
-  </form>
+  <p>also <a href="/autoenroll">autoenroll</a></p>
+  <label for="term">View classes for term:</label>
+  <select id="term" autocomplete="off" onchange="fetchClasses()">
+    <option disabled selected value> -- select -- </option>
+    <% for (const term of terms) { %>
+    <option value="<%= term %>"><%= term %></option>
+    <% } %>
+  </select>
+  <div id="output">
+    <table style="display: none;">
+      <thead>
+        <tr>
+          <th>Class ID</th>
+          <th>Title</th>
+          <th>Show Sections</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 </body>
 
 <script type="text/javascript">
-  document
-    .querySelector('form.search-class-code')
-    .addEventListener('submit', (e) => {
-      event.preventDefault()
-      const data = Object.fromEntries(new FormData(e.target).entries())
-      const classCode = data['class-code']
-      const term = data['term']
-      fetch(`/api/terms/${term}/regblocks/?registrationNumber=${classCode}`)
-        .then((response) => response.json())
-        .then((data) => {
-          const output = document.getElementById('output')
-          if ('sections' in data && data['sections'].length !== 0) {
-            output.textContent =
-              'i will parse this json later I promise ' + JSON.stringify(data)
-            output.style.color = 'black'
-          } else {
-            // request failed, either a bad class code or a bad term somehow
-            output.textContent = 'Invalid class code'
-            output.style.color = 'red'
-          }
-        })
-    })
+  async function fetchClasses() {
+    const term = document.getElementById('term').value
+    const output = document.getElementById('output')
+    try {
+      const response = await fetch(`/api/terms/${term}/courses`)
+      const classes = await response.json()
+      if (classes.length === 0) {
+        throw Error(`Returned empty array for classes in term ${term}`)
+      }
+      const tbody = document.querySelector('#output tbody')
+      tbody.innerHTML = ''
+      classes.forEach((c) => {
+        const tr = document.createElement('tr')
+        const td1 = document.createElement('td')
+        const td2 = document.createElement('td')
+        const td3 = document.createElement('td')
+        td1.textContent = c['id'].replace('|', ' ')
+        td2.textContent = c['title']
+        td3.textContent = '(a View Course button)'
+        tr.appendChild(td1)
+        tr.appendChild(td2)
+        tr.appendChild(td3)
+        tbody.appendChild(tr)
+      })
+    } catch (err) {
+      output.textContent = `Unable to fetch classes for ${term}, sorry`
+      console.error(err)
+    }
+    document.querySelector('#output table').style.display = 'block'
+  }
 </script>
 
 </html>
