@@ -10,9 +10,7 @@ import rmp from '../lib/rmp'
 
 // INDEX
 router.get('/', async (req, res) => {
-  res.render('pages/root/index.ejs', {
-    terms: app.locals.terms,
-  })
+  res.render('pages/root/index.ejs')
 })
 
 // LOGIN
@@ -96,6 +94,14 @@ router.get('/rmp', async (req, res) => {
   } else {
     res.send(rmpResponse)
   }
+})
+
+// COURSES
+router.get('/courses', async (req, res) => {
+  res.render('pages/root/courses.ejs', {
+    terms: app.locals.terms,
+    subjects: app.locals.termSubjects,
+  })
 })
 
 export { router }

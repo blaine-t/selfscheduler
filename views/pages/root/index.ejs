@@ -14,58 +14,7 @@
   </p>
   <p>check out the <a href="/api/">proxy</a></p>
   <p>also <a href="/autoenroll">autoenroll</a></p>
-  <label for="term">View classes for term:</label>
-  <select id="term" autocomplete="off" onchange="fetchClasses()">
-    <option disabled selected value> -- select -- </option>
-    <% for (const term of terms) { %>
-    <option value="<%= term %>"><%= term %></option>
-    <% } %>
-  </select>
-  <div id="output">
-    <table style="display: none;">
-      <thead>
-        <tr>
-          <th>Class ID</th>
-          <th>Title</th>
-          <th>Show Sections</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  <p>also <a href="courses">courses</a></p>
 </body>
-
-<script type="text/javascript">
-  async function fetchClasses() {
-    const term = document.getElementById('term').value
-    const output = document.getElementById('output')
-    try {
-      const response = await fetch(`/api/terms/${term}/courses`)
-      const classes = await response.json()
-      if (classes.length === 0) {
-        throw Error(`Returned empty array for classes in term ${term}`)
-      }
-      const tbody = document.querySelector('#output tbody')
-      tbody.innerHTML = ''
-      classes.forEach((c) => {
-        const tr = document.createElement('tr')
-        const td1 = document.createElement('td')
-        const td2 = document.createElement('td')
-        const td3 = document.createElement('td')
-        td1.textContent = c['id'].replace('|', ' ')
-        td2.textContent = c['title']
-        td3.textContent = '(a View Course button)'
-        tr.appendChild(td1)
-        tr.appendChild(td2)
-        tr.appendChild(td3)
-        tbody.appendChild(tr)
-      })
-    } catch (err) {
-      output.textContent = `Unable to fetch classes for ${term}, sorry`
-      console.error(err)
-    }
-    document.querySelector('#output table').style.display = 'block'
-  }
-</script>
 
 </html>

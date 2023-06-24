@@ -35,10 +35,19 @@ async function login() {
   )
   cookie.scheduleRefresh()
   // use the new cookie to cache info into the app so we don't have to request it later
+  // Term info
   const jsonResponse = await util.requestJson('/api/terms')
   // extract term strings from the jsonResponse (e.g. 'Fall 2023')
   app.locals.terms = jsonResponse.map((term: { id: string }) => term.id)
   app.locals.termCodes = jsonResponse.map((term: { code: string }) => term.code)
+
+  // Subject info
+  for (const term of app.locals.terms) {
+    const jsonResponse = await util.requestJson(`/api/terms/${term}/subjects`)
+    app.locals.termSubjects.push(
+      jsonResponse.map((subject: { id: string }) => subject.id)
+    )
+  }
 }
 
 export default { checkAuthentication, login }

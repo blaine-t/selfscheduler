@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Courses</title>
+  <%- include('../../components/head'); %>
+  <script src="/js/sse.js" async></script>
+</head>
+
+<body>
+  <label for="term">View classes for term:</label>
+  <select id="term" autocomplete="off" onchange="updateSubjects(); fetchClasses()">
+    <option disabled selected value> -- select -- </option>
+    <% for (const term of terms) { %>
+    <option value="<%= term %>"><%= term %></option>
+    <% } %>
+  </select>
+  <select id="subject" autocomplete="off" onchange="updateClasses()">
+    <option value="ALL">ALL</option>
+  </select>
+  <input type="text" id="number" name="number" oninput="updateClasses()" />
+  <div id="output">
+    <table style="display: none;">
+      <thead>
+        <tr>
+          <th>Class ID</th>
+          <th>Title</th>
+          <th>Show Sections</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</body>
+
+<script type="text/javascript">
+  updateSubjects()
+
+  function removeOptions(selectElement) {
+    var i, L = selectElement.options.length - 1;
+    for (i = L; i > 0; i--) {
+      selectElement.remove(i);
+    }
+  }
+
+  function updateSubjects() {
+    removeOptions(document.getElementById('subject'))
+    const subjects = <%- JSON.stringify(subjects) %>
+    const terms = <%- JSON.stringify(terms) %>
+    subjects[terms.indexOf(document.getElementById('term').value)].forEach((subject) => {
+      let opt = document.createElement('option')
+      opt.value = subject
+      opt.innerText = subject
+      document.getElementById('subject').appendChild(opt)
+    })
+  }
+
+  async function fetchClasses() {
+    const term = document.getElementById('term').value
+    const subject = document.getElementById('subject').value
+    const output = document.getElementById('output')
+    try {
+      let fetchURL = `/api/terms/${term}/`
+      if (subject == 'ALL') {
+        fetchURL += 'courses'
+      } else {
+        fetchURL += `subjects/${subject}/courses`
+      }
+      const response = await fetch(fetchURL)
+      const classes = await response.json()
+      if (classes.length === 0) {
+        throw Error(`Returned empty array for classes in term ${term}`)
+      }
+      const tbody = document.querySelector('#output tbody')
+      tbody.innerHTML = ''
+      classes.forEach((c) => {
+        const tr = document.createElement('tr')
+        const td1 = document.createElement('td')
+        const td2 = document.createElement('td')
+        const td3 = document.createElement('td')
+        td1.textContent = c['id'].replace('|', ' ')
+        td2.textContent = c['title']
+        td3.textContent = '(a View Course button)'
+        tr.appendChild(td1)
+        tr.appendChild(td2)
+        tr.appendChild(td3)
+        tbody.appendChild(tr)
+      })
+    } catch (err) {
+      output.textContent = `Unable to fetch classes for ${term}, sorry`
+      console.error(err)
+    }
+    document.querySelector('#output table').style.display = 'block'
+  }
+
+  function updateClasses() {
+    const tbody = document.querySelector('#output tbody')
+    const subject = document.getElementById('subject').value
+    const number = document.getElementById('number').value
+    let match = ''
+    if (subject == 'ALL') {
+      match = number
+    } else {
+      match = subject + ' ' + number
+    }
+    for (child of tbody.children) {
+      if (child.firstChild.innerText.match(match)) {
+        child.hidden = false
+      } else {
+        child.hidden = true
+      }
+    }
+  }
+</script>
+
+</html>

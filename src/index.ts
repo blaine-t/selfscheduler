@@ -74,7 +74,9 @@ app.locals.stamp = () => `${new Date().toLocaleTimeString('en-UK')}`
 // Data for auto refresh
 app.locals.cookie = null
 app.locals.currentlyRefreshing = false // gets set to true when the loop starts
-app.locals.terms = app.locals.termCodes = []
+app.locals.terms = []
+app.locals.termCodes = []
+app.locals.termSubjects = []
 app.locals.clients = []
 app.locals.scheduledEnrollments = []
 
