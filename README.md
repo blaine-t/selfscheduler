@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/img/logo.png" height="128">
+  <img src="public/img/logo.png" height="128">
 </p>
 
 ## Description
@@ -8,11 +8,11 @@ selfscheduler is a project developed to improve the usability and features of th
 
 ## Powered By
 
-      <img src="docs/img/node.png" width="20" height="20"> [**Node.js**](https://github.com/nodejs/node) is the runtime we decided to use for this project because of its long standing reputation in the programming world <br />
-      <img src="docs/img/typeScript.svg" width="20" height="20"> [**Typescript**](https://github.com/microsoft/TypeScript) - Most if not all of the backend code is written in typescript. TS was chosen over javascript because for a complex project ensuring that types remained consistent throughout was crucial to having less error prone code. While it was a decent learning curve it definitely made development easier especially towards the end <br />
-      <img src="docs/img/express.png" height="20"> [**Express.js**](https://github.com/expressjs/express) was used as a minimalist web framework. It gave us low enough capabilities without going too low that it was hard to develop with <br />
-      <img src="docs/img/ejs.png" height="20"> [**EJS**](https://github.com/expressjs/express) was used as a minimalist template framework. It allows for the fine development of HTML with the niceties of server side rendering which was crucial for this project to be lightweight <br />
-      <img src="docs/img/socketIO.svg" height="20"> [**Socket.io**](https://github.com/socketio/socket.io) - used to interface with shopping cart and enrollment actions in collegescheduler
+      <img src="public/img/node.png" width="20" height="20"> [**Node.js**](https://github.com/nodejs/node) is the runtime we decided to use for this project because of its long standing reputation in the programming world <br />
+      <img src="public/img/typeScript.svg" width="20" height="20"> [**Typescript**](https://github.com/microsoft/TypeScript) - Most if not all of the backend code is written in typescript. TS was chosen over javascript because for a complex project ensuring that types remained consistent throughout was crucial to having less error prone code. While it was a decent learning curve it definitely made development easier especially towards the end <br />
+      <img src="public/img/express.png" height="20"> [**Express.js**](https://github.com/expressjs/express) was used as a minimalist web framework. It gave us low enough capabilities without going too low that it was hard to develop with <br />
+      <img src="public/img/ejs.png" height="20"> [**EJS**](https://github.com/expressjs/express) was used as a minimalist template framework. It allows for the fine development of HTML with the niceties of server side rendering which was crucial for this project to be lightweight <br />
+      <img src="public/img/socketIO.svg" height="20"> [**Socket.io**](https://github.com/socketio/socket.io) - used to interface with shopping cart and enrollment actions in collegescheduler
 
 ## Special Thanks To
 

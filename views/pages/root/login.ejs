@@ -14,20 +14,58 @@
   .hidden {
     display: none;
   }
+
+  #README {
+    float: left;
+    width: 34%;
+  }
+
+  #LOGIN {
+    float: left;
+    margin-left: 6%;
+  }
 </style>
 
 <body>
-  <h1>Please enter your session cookie</h1>
-  <h2>Your session cookie is what allows the program to continue to access the collegescheduler API</h2>
-  <h3>Instructions on how to find your cookie are given below:</h3>
-  <p>You can find your cookie by going to your collegescheduler's page and then going to dev tools by hitting F12 or Ctrl+I.</p>
-  <p>Then if on Chrome go to Application and (for both Chrome and Firefox) then Storage and then Cookies for the site and then grabbing the value of the ".AspNet Cookies"</p>
-  <form action="/login" method="POST">
-    <label for="cookie">Cookie:</label>
-    <input type="text" id="cookie" name="cookie" required />
-    <button type="submit">Submit</button>
-  </form>
-  <p id="login-failed" class="hidden">Invalid session cookie, try again</p>
+  <!-- Generated using marked v5.1.0 on 6/24/23 at 13:45 CDT -->
+  <div id="README">
+    <p align="center">
+      <img src="img/logo.png" height="128">
+    </p>
+
+    <h2 id="description">Description</h2>
+    <p>selfscheduler is a project developed to improve the usability and features of the existing collegescheduler used at many universities across the US. To do this we reverse engineered the socket.io connections going to and from the server to develop a 1:1 compatible implementation that allows us to include advanced features such as autoenroll, our solution to making sure that you get that one class that you need for the ultimate schedule. We also implemented a proxy between collegescheduler and the user to ensure that the users cookie is always available for quick schedule changes.</p>
+    <h2 id="powered-by">Powered By</h2>
+    <p>      <img src="img/node.png" width="20" height="20"> <a href="https://github.com/nodejs/node"><strong>Node.js</strong></a> is the runtime we decided to use for this project because of its long standing reputation in the programming world <br />
+            <img src="img/typeScript.svg" width="20" height="20"> <a href="https://github.com/microsoft/TypeScript"><strong>Typescript</strong></a> - Most if not all of the backend code is written in typescript. TS was chosen over javascript because for a complex project ensuring that types remained consistent throughout was crucial to having less error prone code. While it was a decent learning curve it definitely made development easier especially towards the end <br />
+            <img src="img/express.png" height="20"> <a href="https://github.com/expressjs/express"><strong>Express.js</strong></a> was used as a minimalist web framework. It gave us low enough capabilities without going too low that it was hard to develop with <br />
+            <img src="img/ejs.png" height="20"> <a href="https://github.com/expressjs/express"><strong>EJS</strong></a> was used as a minimalist template framework. It allows for the fine development of HTML with the niceties of server side rendering which was crucial for this project to be lightweight <br />
+            <img src="img/socketIO.svg" height="20"> <a href="https://github.com/socketio/socket.io"><strong>Socket.io</strong></a> - used to interface with shopping cart and enrollment actions in collegescheduler</p>
+    <h2 id="special-thanks-to">Special Thanks To</h2>
+    <p>      <img src="https://avatars.githubusercontent.com/u/4109551" height="20"> <a href="https://github.com/cougargrades/collegescheduler"><strong>Original College Scheduler Proxy</strong></a> - Helped us implement the proxy part of the program with speed</p>
+    <h2 id="contributors">Contributors</h2>
+    <p>      <img src="https://avatars.githubusercontent.com/u/65707789" height="20"> <a href="https://github.com/anton-3"><strong>anton-3</strong></a> <br />
+            <img src="https://avatars.githubusercontent.com/u/108963625" height="20"> <a href="https://github.com/blaine-t"><strong>blaine-t</strong></a></p>
+  </div>
+  <div id="LOGIN">
+    <h1>Please enter your session cookie</h1>
+    <h2>Your session cookie is what allows the program to continue to access the collegescheduler API</h2>
+    <h3>Instructions on how to find your cookie are given below:</h3>
+    <p>You can find your cookie by going to your collegescheduler's page and then going to dev tools by hitting F12 or Ctrl+Shift+I or right click > inspect.</p>
+    <% if(userAgent.match('Firefox')) { %>
+    <p>Then on Firefox go to Storage and then Cookies for the site and then grab the value of the ".AspNet Cookies"</p>
+    <img src="img/firefoxCookies.png">
+    <% } else { %>
+    <p>Then on Chrome go to Application and then Storage and then Cookies for the site and then grabbing the value of the ".AspNet Cookies"</p>
+    <img src="img/chromeCookies.png">
+    <% } %>
+    <form action="/login" method="POST">
+      <label for="cookie">Cookie:</label>
+      <input type="text" id="cookie" name="cookie" required />
+      <button type="submit">Submit</button>
+    </form>
+    <p id="login-failed" class="hidden">Invalid session cookie, try again</p>
+  </div>
 </body>
 
 <script type="text/javascript">

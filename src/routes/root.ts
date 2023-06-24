@@ -17,7 +17,8 @@ router.get('/', async (req, res) => {
 
 // LOGIN
 router.get('/login', async (req, res) => {
-  res.render('pages/root/login.ejs')
+  //TODO: Add images for light vs dark mode
+  res.render('pages/root/login.ejs', { userAgent: req.get('User-Agent') })
 })
 
 router.post('/login', async (req, res) => {
