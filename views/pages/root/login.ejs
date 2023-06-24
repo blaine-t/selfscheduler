@@ -17,7 +17,11 @@
 </style>
 
 <body>
-  <h1>gimme ur session cookie</h1>
+  <h1>Please enter your session cookie</h1>
+  <h2>Your session cookie is what allows the program to continue to access the collegescheduler API</h2>
+  <h3>Instructions on how to find your cookie are given below:</h3>
+  <p>You can find your cookie by going to your collegescheduler's page and then going to dev tools by hitting F12 or Ctrl+I.</p>
+  <p>Then if on Chrome go to Application and (for both Chrome and Firefox) then Storage and then Cookies for the site and then grabbing the value of the ".AspNet Cookies"</p>
   <form action="/login" method="POST">
     <label for="cookie">Cookie:</label>
     <input type="text" id="cookie" name="cookie" required />

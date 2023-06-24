@@ -52,7 +52,7 @@ async function getProfessorStats(professor: string) {
   try {
     const postBody = `{ "query": "query TeacherRatingsPageQuery { node(id: \\"${await getProfessorId(
       professor
-    )}\\") { __typename ... on Teacher { id avgRating avgDifficulty numRatings } id } }" }`
+    )}\\") { __typename ... on Teacher { id avgRating avgDifficulty numRatings wouldTakeAgainPercent } id } }" }`
     const jsonResponse = await graphqlRequest(postBody)
     return jsonResponse['data']['node']
   } catch (err) {
