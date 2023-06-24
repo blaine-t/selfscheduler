@@ -10,10 +10,11 @@ async function requestJson(endpoint: string) {
     `${app.locals.HOST}${endpoint}`,
     app.locals.defaultFetchArgs()
   )
-  if (response.status !== 200) {
-    throw Error(
-      `Provided cookie was invalid with status code ${response.status}`
-    )
+  // the API responds with 302 if cookie is bad, 5XX if some server error
+  // which happens sometimes, and 4XX if some client request error
+  // we'll only error on 302 and 5XX
+  if (response.status !== 200 && !response.status.toString().startsWith('4')) {
+    throw Error(`API request failed with status code ${response.status}`)
   }
   // Extract the set-cookie header and update the cookie if possible
   cookie.extract(response)
