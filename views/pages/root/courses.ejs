@@ -5,6 +5,7 @@
   <title>Courses</title>
   <%- include('../../components/head'); %>
   <script src="/js/sse.js" async></script>
+  <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js" async></script>
 </head>
 
 <body>
@@ -20,7 +21,7 @@
   </select>
   <input type="text" id="number" name="number" oninput="updateClasses()" />
   <div id="output">
-    <table style="display: none;">
+    <table style="display: none;" class="sortable">
       <thead>
         <tr>
           <th>Class ID</th>
@@ -31,6 +32,27 @@
       <tbody></tbody>
     </table>
   </div>
+  <dialog id="courseInfo">
+    <h1 id="classID">CLASS ID</h1>
+    <h1 id="className">CLASS NAME</h1>
+    <h2 id="classDescription">DESCRIPTION</h2>
+    <table class="sortable">
+      <thead>
+        <tr>
+          <th>Class #</th>
+          <th>Section</th>
+          <th>Seats Open</th>
+          <th>Campus</th>
+          <th>Day(s) & Location(s)</th>
+          <th>Instructor(s)</th>
+          <th>Credits</th>
+          <th>Component</th>
+          <th>Waitlist Open</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </dialog>
 </body>
 
 <script type="text/javascript">
@@ -78,9 +100,16 @@
         const td1 = document.createElement('td')
         const td2 = document.createElement('td')
         const td3 = document.createElement('td')
-        td1.textContent = c['id'].replace('|', ' ')
-        td2.textContent = c['title']
-        td3.textContent = '(a View Course button)'
+        const courseButton = document.createElement('button')
+        const id = c['id'].replace('|', ' ')
+        const title = c['title']
+        courseButton.innerText = "View Course"
+        courseButton.onclick = function() {
+          courseDetails(id, title, c['description'])
+        }
+        td1.textContent = id
+        td2.textContent = title
+        td3.appendChild(courseButton)
         tr.appendChild(td1)
         tr.appendChild(td2)
         tr.appendChild(td3)
@@ -109,6 +138,69 @@
       } else {
         child.hidden = true
       }
+    }
+  }
+
+  async function courseDetails(id, title, description) {
+    try {
+      document.getElementById('classID').innerText = id
+      document.getElementById('className').innerText = title
+      document.getElementById('classDescription').innerText = description
+      const term = document.getElementById('term').value
+      const subject = id.split(" ")[0]
+      const number = id.split(" ")[1]
+      const response = await fetch(`/api/terms/${term}/subjects/${subject}/courses/${number}/regblocks`)
+      const jsonResponse = await response.json()
+      const sections = jsonResponse['sections']
+      console.log(sections)
+      const tbody = document.querySelector('#courseInfo tbody')
+      tbody.innerHTML = ''
+      sections.forEach((s) => {
+        const tr = document.createElement('tr')
+        const td1 = document.createElement('td')
+        const td2 = document.createElement('td')
+        const td3 = document.createElement('td')
+        const td4 = document.createElement('td')
+        const td5 = document.createElement('td')
+        const td6 = document.createElement('td')
+        const td7 = document.createElement('td')
+        const td8 = document.createElement('td')
+        const td9 = document.createElement('td')
+
+        td1.textContent = s['id']
+        td2.textContent = s['sectionNumber']
+        td3.textContent = s['openSeats']
+        td4.textContent = s['location']
+        if (s['location'] == 'Distance Delivery') {
+          td5.textContent = 'ONLINE'
+        } else {
+          s['meetings'].forEach((m) => {
+            td5.textContent += `${m['days']} - ${m['startTime']}-${m['endTime']} at ${m['location']}\n`
+          })
+        }
+        s['instructor'].forEach((i) => {
+          td6.textContent += `${i['name']}\n`
+        })
+        td7.textContent = s['credits']
+        td8.textContent = s['component']
+        td9.textContent = s['waitlistOpen']
+
+        tr.appendChild(td1)
+        tr.appendChild(td2)
+        tr.appendChild(td3)
+        tr.appendChild(td4)
+        tr.appendChild(td5)
+        tr.appendChild(td6)
+        tr.appendChild(td7)
+        tr.appendChild(td8)
+        tr.appendChild(td9)
+
+        tbody.appendChild(tr)
+      })
+      document.getElementById('courseInfo').showModal()
+    } catch (err) {
+      document.getElementById('classDescription').textContent = `Unable to get sections for ${id}, sorry`
+      console.error(err)
     }
   }
 </script>

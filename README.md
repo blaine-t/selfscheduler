@@ -16,7 +16,8 @@ selfscheduler is a project developed to improve the usability and features of th
 
 ## Special Thanks To
 
-      <img src="https://avatars.githubusercontent.com/u/4109551" height="20"> [**Original College Scheduler Proxy**](https://github.com/cougargrades/collegescheduler) - Helped us implement the proxy part of the program with speed
+      <img src="https://avatars.githubusercontent.com/u/4109551" height="20"> [**Original College Scheduler Proxy**](https://github.com/cougargrades/collegescheduler) - Helped us implement the proxy part of the program with speed <br />
+      [**sorttable**](https://www.kryogenix.org/code/browser/sorttable/) - Allowed us to create easy to sort tables with minimal effort
 
 ## Contributors
 
