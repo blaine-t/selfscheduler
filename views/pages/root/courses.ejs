@@ -45,6 +45,7 @@
           <th>Campus</th>
           <th>Day(s) & Location(s)</th>
           <th>Instructor(s)</th>
+          <th>RMP</th>
           <th>Credits</th>
           <th>Component</th>
           <th>Waitlist Open</th>
@@ -56,6 +57,9 @@
 </body>
 
 <script type="text/javascript">
+  instructors = []
+  promises = []
+  instructorsData = new Map()
   updateSubjects()
 
   function removeOptions(selectElement) {
@@ -141,6 +145,78 @@
     }
   }
 
+  function rmpParse(instructorData) {
+    // Declare DOM elements
+    const div = document.createElement('div')
+    div.classList.add('rmpBox')
+    const imgBox = document.createElement('div')
+    const img = document.createElement('img')
+    const amtBox = document.createElement('div')
+    const rateBox = document.createElement('div')
+    const diffBox = document.createElement('div')
+    const wtaBox = document.createElement('div')
+
+    // Add RMP logo
+    img.src = 'https://www.ratemyprofessors.com/favicons/favicon-32.png'
+    img.alt = 'RMP logo'
+    imgBox.appendChild(img)
+    imgBox.classList.add('imgBox')
+    div.appendChild(imgBox)
+
+    // Add amount of reviews box
+    amtBox.textContent = instructorData['numRatings']
+    amtBox.classList.add('amtBox')
+    div.appendChild(amtBox)
+
+    // Add average rating box
+    rateBox.textContent = instructorData['avgRating']
+    rateBox.classList.add('rateBox')
+    div.appendChild(rateBox)
+
+    // Add average difficulty box
+    diffBox.textContent = instructorData['avgDifficulty']
+    diffBox.classList.add('diffBox')
+    div.appendChild(diffBox)
+
+    // Add would take again percent box
+    wtaBox.textContent = instructorData['wouldTakeAgainPercent']
+    wtaBox.classList.add('wtaBox')
+    div.appendChild(wtaBox)
+
+    return div
+  }
+
+  // Fetch the instructor's data
+  async function rmpFetch(instructor) {
+    //TODO: Mangle name to attempt to get better result
+    //TODO: FIX this handling of bad requests
+    // Request RMP data from the proxy server endpoint
+    const response = await fetch(`/rmp?name=${instructor}`)
+
+    // Error handle a bad response
+    if (response.status != 200) {
+      zeroData = {
+        numRatings: 0,
+        avgDifficulty: 0,
+        avgRating: 0,
+        wouldTakeAgainPercent: 0
+      }
+      return rmpParse(zeroData)
+    }
+
+    // Parse and return JSON as div to promises array
+    const jsonResponse = await response.json()
+    return rmpParse(jsonResponse)
+  }
+
+  // Check if instructor already requested, if not send out a fetch promise
+  function rmpCache(instructor) {
+    if (!instructors.includes(instructor)) {
+      instructors.push(instructor)
+      promises.push(rmpFetch(instructor))
+    }
+  }
+
   async function courseDetails(id, title, description) {
     try {
       document.getElementById('classID').innerText = id
@@ -152,7 +228,6 @@
       const response = await fetch(`/api/terms/${term}/subjects/${subject}/courses/${number}/regblocks`)
       const jsonResponse = await response.json()
       const sections = jsonResponse['sections']
-      console.log(sections)
       const tbody = document.querySelector('#courseInfo tbody')
       tbody.innerHTML = ''
       sections.forEach((s) => {
@@ -166,6 +241,7 @@
         const td7 = document.createElement('td')
         const td8 = document.createElement('td')
         const td9 = document.createElement('td')
+        const td10 = document.createElement('td')
 
         td1.textContent = s['id']
         td2.textContent = s['sectionNumber']
@@ -180,10 +256,11 @@
         }
         s['instructor'].forEach((i) => {
           td6.textContent += `${i['name']}\n`
+          rmpCache(i['name'])
         })
-        td7.textContent = s['credits']
-        td8.textContent = s['component']
-        td9.textContent = s['waitlistOpen']
+        td8.textContent = s['credits']
+        td9.textContent = s['component']
+        td10.textContent = s['waitlistOpen']
 
         tr.appendChild(td1)
         tr.appendChild(td2)
@@ -194,10 +271,31 @@
         tr.appendChild(td7)
         tr.appendChild(td8)
         tr.appendChild(td9)
+        tr.appendChild(td10)
 
         tbody.appendChild(tr)
       })
       document.getElementById('courseInfo').showModal()
+
+      const responses = await Promise.all(promises)
+
+      // Add instructors and their data into a map
+      for (let i = 0; i < instructors.length; i++) {
+        instructorsData.set(instructors[i], responses[i])
+      }
+
+      // Add RMP data to the table based on the instructor name
+      Array.from(tbody.children).forEach((tr) => {
+        const instructorCol = tr.children[6 - 1]
+        const rmpCol = tr.children[7 - 1]
+        const tableInstructors = instructorCol.textContent.split('\n')
+        // Remove the trailing empty string
+        tableInstructors.pop()
+        tableInstructors.forEach((i) => {
+          rmpCol.appendChild(instructorsData.get(i).cloneNode(true))
+        })
+      })
+
     } catch (err) {
       document.getElementById('classDescription').textContent = `Unable to get sections for ${id}, sorry`
       console.error(err)
