@@ -1,6 +1,10 @@
 // Initialize express
 import express from 'express'
 const app = express()
+
+// Source .env
+import 'dotenv/config'
+
 const port = process.env.PORT || 42042
 
 // Set the view engine to EJS, enable url encoded request bodies
@@ -33,9 +37,6 @@ import { router as apiRouter } from './routes/api'
 import { router as rootRouter } from './routes/root'
 app.use('/api', apiRouter)
 app.use('/', rootRouter)
-
-// Source .env
-import 'dotenv/config'
 
 // Load env variables to app.locals
 app.locals.USERAGENT =
