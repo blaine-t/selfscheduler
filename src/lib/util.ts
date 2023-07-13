@@ -8,7 +8,7 @@ import cookie from './cookie'
 async function requestJson(endpoint: string) {
   const response = await fetch(
     `${app.locals.HOST}${endpoint}`,
-    app.locals.defaultFetchArgs()
+    app.locals.defaultFetchArgs(),
   )
   // the API responds with 302 if cookie is bad, 5XX if some server error
   // which happens sometimes, and 4XX if some client request error

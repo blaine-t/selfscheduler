@@ -41,8 +41,8 @@ async function emit(requestType: string, request: object) {
         listen(
           socket,
           requestType.replace('request', 'response'),
-          callbackResponse
-        )
+          callbackResponse,
+        ),
       )
     })
   })
@@ -52,7 +52,7 @@ async function emit(requestType: string, request: object) {
 function listen(
   socket: SocketIOClient.Socket,
   responseType: string,
-  callbackResponse: object
+  callbackResponse: object,
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     if (JSON.stringify(callbackResponse).includes('true')) {
@@ -66,9 +66,9 @@ function listen(
       reject(
         new Error(
           `${responseType} failed. Response: ${JSON.stringify(
-            callbackResponse
-          )}`
-        )
+            callbackResponse,
+          )}`,
+        ),
       )
       // TODO: Add error notification
     }
@@ -123,7 +123,7 @@ async function enroll(termCode: string) {
 async function drop(
   termCode: string,
   regNumberList: string[],
-  academicCareerCode: string
+  academicCareerCode: string,
 ) {
   const request = {
     termCode,
@@ -178,7 +178,7 @@ export interface ClassInfo {
 async function swap(
   termCode: string,
   dropRegNumber: string,
-  classInfo: ClassInfo
+  classInfo: ClassInfo,
 ) {
   const request = {
     termCode,

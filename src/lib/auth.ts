@@ -14,7 +14,7 @@ import cookie from './cookie'
 function checkAuthentication(
   req: Request,
   res: ExpressResponse,
-  next: NextFunction
+  next: NextFunction,
 ) {
   if (app.locals.cookie && req.originalUrl.split('?')[0] === '/login') {
     res.redirect('/')
@@ -31,7 +31,7 @@ function checkAuthentication(
 async function login() {
   // if the cookie is valid, schedule refreshes and redirect to /
   console.info(
-    'successful login, proxy is now available and cookie will now be refreshed'
+    'successful login, proxy is now available and cookie will now be refreshed',
   )
   cookie.scheduleRefresh()
   // use the new cookie to cache info into the app so we don't have to request it later
@@ -45,7 +45,7 @@ async function login() {
   for (const term of app.locals.terms) {
     const jsonResponse = await util.requestJson(`/api/terms/${term}/subjects`)
     app.locals.termSubjects.push(
-      jsonResponse.map((subject: { id: string }) => subject.id)
+      jsonResponse.map((subject: { id: string }) => subject.id),
     )
   }
 }

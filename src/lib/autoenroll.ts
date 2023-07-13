@@ -25,7 +25,7 @@ async function postRequest(req: Request, res: Response) {
       // ensure the interval isn't too short
       if (interval < 15000) {
         res.redirect(
-          '/autoenroll?tab=1&error=Interval must be greater than 15 seconds'
+          '/autoenroll?tab=1&error=Interval must be greater than 15 seconds',
         )
         break
       }
@@ -78,7 +78,7 @@ async function postRequest(req: Request, res: Response) {
  */
 function setEnrollInterval(termCode: string, ms: number) {
   console.info(
-    `${app.locals.stamp()} Setting interval to enroll every ${ms} ms`
+    `${app.locals.stamp()} Setting interval to enroll every ${ms} ms`,
   )
   // setInterval doesn't call the function initially so we do that ourselves
   enrollRequest(termCode)
@@ -93,8 +93,8 @@ function setEnrollInterval(termCode: string, ms: number) {
 function scheduleEnroll(termCode: string, timestamp: number) {
   console.info(
     `${app.locals.stamp()} Scheduling an enroll request for ${new Date(
-      timestamp
-    )}`
+      timestamp,
+    )}`,
   )
   app.locals.scheduledEnrollments.push(timestamp)
   app.locals.scheduledEnrollments.sort()
@@ -104,7 +104,7 @@ function scheduleEnroll(termCode: string, timestamp: number) {
     enrollRequest(termCode)
     // remove the timestamp from the scheduled list after it goes through
     app.locals.scheduledEnrollments = app.locals.scheduledEnrollments.filter(
-      (t: number) => t !== timestamp
+      (t: number) => t !== timestamp,
     )
   }, delay)
 }

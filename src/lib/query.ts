@@ -4,7 +4,7 @@ import util from './util'
 async function accessToken() {
   try {
     const jsonResponse = await util.requestJson(
-      '/api/oauth/student/client-credentials/token'
+      '/api/oauth/student/client-credentials/token',
     )
     const accessToken = jsonResponse['accessToken']
     return accessToken

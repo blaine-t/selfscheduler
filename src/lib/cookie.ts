@@ -20,7 +20,7 @@ function scheduleRefresh() {
       // if 3 refresh failures in a row, kill the loop
       if (fails >= 3) {
         console.error(
-          'Refresh failed 3 times in a row, removing cookie and disabling proxy...'
+          'Refresh failed 3 times in a row, removing cookie and disabling proxy...',
         )
         app.locals.cookie = null
         app.locals.currentlyRefreshing = false
@@ -63,8 +63,8 @@ function extract(response: Response) {
   console.info(
     `${app.locals.stamp()} Refreshed cookie to ${app.locals.cookie.slice(
       0,
-      10
-    )}...`
+      10,
+    )}...`,
   )
   return response
 }
@@ -80,7 +80,7 @@ async function checkCookie() {
 
   if (response.status !== 200) {
     throw Error(
-      `Provided cookie was invalid with status code ${response.status}`
+      `Provided cookie was invalid with status code ${response.status}`,
     )
   }
   return response
