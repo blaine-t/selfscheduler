@@ -12,16 +12,16 @@
     "docker-build": "tsc && docker build . -t blaine-t/selfscheduler"
   },
   "dependencies": {
-    "cookie": "^0.7.2",
+    "cookie": "^1.0.2",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
-    "express": "^4.21.0",
+    "express": "^5.0.1",
     "interval-promise": "^1.4.0",
     "socket.io-client": "^2.5.0"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.5",
-    "@types/express": "^4.17.21",
+    "@types/express": "^5.0.0",
     "@types/node": "^22.7.5",
     "@types/node-schedule": "^2.1.7",
     "@types/socket.io-client": "1.4.36",
