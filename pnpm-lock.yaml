@@ -20,9 +20,6 @@ dependencies:
   express:
     specifier: ^5.0.1
     version: 5.0.1
-  globals:
-    specifier: ^16.3.0
-    version: 16.3.0
   interval-promise:
     specifier: ^1.4.0
     version: 1.4.0
@@ -58,6 +55,9 @@ devDependencies:
   eslint-config-prettier:
     specifier: ^10.1.8
     version: 10.1.8(eslint@9.31.0)
+  globals:
+    specifier: ^16.3.0
+    version: 16.3.0
   nodemon:
     specifier: ^3.1.7
     version: 3.1.7
@@ -1147,7 +1147,7 @@ packages:
   /globals@16.3.0:
     resolution: {integrity: sha512-bqWEnJ1Nt3neqx2q5SFfGS8r/ahumIakg3HcwtNlrVlwXIeNumWn/c7Pn/wKzGhf6SaW6H6uWXLqC30STCMchQ==}
     engines: {node: '>=18'}
-    dev: false
+    dev: true
 
   /gopd@1.2.0:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
