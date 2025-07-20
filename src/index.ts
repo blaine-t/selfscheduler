@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }))
 // Remove any trailing slashes with redirect
 // https://stackoverflow.com/a/15773824
 app.use((req, res, next) => {
-  if (req.path.slice(-1) === '/' && req.path.length > 1) {
+  if (req.path.endsWith('/') && req.path.length > 1) {
     const query = req.url.slice(req.path.length)
     const safepath = req.path.slice(0, -1).replace(/\/+/g, '/')
     res.redirect(301, safepath + query)

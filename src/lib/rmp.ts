@@ -27,7 +27,7 @@ async function schoolID() {
   try {
     const jsonResponse = await graphqlRequest(postBody)
     app.locals.rmpSchoolID =
-      jsonResponse['data']['newSearch']['schools']['edges'][0]['node']['id']
+      jsonResponse.data.newSearch.schools.edges[0].node.id
   } catch (err) {
     console.error(err)
   }
@@ -38,9 +38,7 @@ async function getProfessorId(professor: string) {
   const postBody = `{ "query": "query NewSearchTeachersQuery { newSearch { teachers(query: { schoolID: \\"${app.locals.rmpSchoolID}\\", text: \\"${professor}\\" }) { edges { node { id } } } } }" }`
   try {
     const jsonResponse = await graphqlRequest(postBody)
-    return jsonResponse['data']['newSearch']['teachers']['edges'][0]['node'][
-      'id'
-    ]
+    return jsonResponse.data.newSearch.teachers.edges[0].node.id
   } catch (err) {
     console.error(`Professor ${professor} ID was not found in RMP DB`)
     return 502
@@ -54,7 +52,7 @@ async function getProfessorStats(professor: string) {
       professor,
     )}\\") { __typename ... on Teacher { id avgRating avgDifficulty numRatings wouldTakeAgainPercent } id } }" }`
     const jsonResponse = await graphqlRequest(postBody)
-    return jsonResponse['data']['node']
+    return jsonResponse.data.node
   } catch (err) {
     console.error(err)
     return 502

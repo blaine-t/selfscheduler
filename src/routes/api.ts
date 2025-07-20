@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
   res.send(listEndpoints())
 })
 
-router.get('/*', async (req, res) => {
+router.get(/(.*)/, async (req, res) => {
   // Check if cookie has not been initialized and tell user auth required
   if (!req.app.locals.cookie) {
     res.sendStatus(511)

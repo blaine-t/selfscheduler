@@ -93,19 +93,17 @@ function parseAll(responseType: string, response: Record<string, any>) {
 
 // Parses individual items of the JSON data from the callback
 function parse(record: Record<string, any>) {
-  let returnString = `${record['title']}`
-  if (record['topicDescription']) {
-    returnString += `💀${record['topicDescription']}`
+  let returnString = `${record.title}`
+  if (record.topicDescription) {
+    returnString += `💀${record.topicDescription}`
   }
   if (
-    record['instructors'] &&
-    record['instructors'][0] &&
-    record['instructors'][0]['name']
+    record.instructors?.[0]?.name
   ) {
-    returnString += `💀${record['instructors'][0]['name']}`
+    returnString += `💀${record.instructors[0].name}`
   }
-  returnString += `💀${record['regNumber']} - ${record['subjectCode']}${record['courseNumber']}`
-  returnString += `💀${record['sectionMessages'][0]['message']}✨${record['sectionMessages'][0]['severity']}`
+  returnString += `💀${record.regNumber} - ${record.subjectCode}${record.courseNumber}`
+  returnString += `💀${record.sectionMessages[0].message}✨${record.sectionMessages[0].severity}`
   return returnString
 }
 

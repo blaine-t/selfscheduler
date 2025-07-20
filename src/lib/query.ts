@@ -6,7 +6,7 @@ async function accessToken() {
     const jsonResponse = await util.requestJson(
       '/api/oauth/student/client-credentials/token',
     )
-    const accessToken = jsonResponse['accessToken']
+    const accessToken = jsonResponse.accessToken
     return accessToken
   } catch (err) {
     console.error(err)
@@ -18,10 +18,10 @@ async function accessToken() {
 async function userInfo(termString: string) {
   try {
     const jsonResponse = await util.requestJson('/api/app-data')
-    const userId = String(jsonResponse['studentUserId'])
-    for (const term of jsonResponse['terms']) {
-      if (term['id'] == termString) {
-        return [userId, term['code']]
+    const userId = String(jsonResponse.studentUserId)
+    for (const term of jsonResponse.terms) {
+      if (term.id == termString) {
+        return [userId, term.code]
       }
     }
     throw Error('No matching term code')

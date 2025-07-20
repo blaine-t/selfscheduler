@@ -41,7 +41,7 @@ async function refresh() {
   const jsonResponse = response.json()
   // we can only do this line because checkCookie specifically calls the token endpoint
   app.locals.accessToken =
-    'accessToken' in jsonResponse ? jsonResponse['accessToken'] : null
+    'accessToken' in jsonResponse ? jsonResponse.accessToken : null
 }
 
 /**
