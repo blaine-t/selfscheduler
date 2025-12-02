@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  parseuri: ^3.0.2
+
 importers:
 
   .:
@@ -832,8 +835,8 @@ packages:
   parseqs@0.0.6:
     resolution: {integrity: sha512-jeAGzMDbfSHHA091hr0r31eYfTig+29g3GKKE/PPbEQ65X0lmMwlEoqmhzu0iztID5uJpZsFlUPDP8ThPL7M8w==}
 
-  parseuri@0.0.6:
-    resolution: {integrity: sha512-AUjen8sAkGgao7UyCX6Ahv0gIK2fABKmYjvP4xmy5JaKvcbTRueIqIPHLAfq30xJddqSE033IOMUSOMCcK3Sow==}
+  parseuri@3.0.2:
+    resolution: {integrity: sha512-eNmfF+mj9fyyZFFW9keXPsIscduBQub8oqnXXPYnl6hGs6P0mshf9ArriI9vB6w08GuuzgQnTWRrWWDTeoCLEQ==}
 
   parseurl@1.3.3:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
@@ -1500,7 +1503,7 @@ snapshots:
       has-cors: 1.1.0
       indexof: 0.0.1
       parseqs: 0.0.6
-      parseuri: 0.0.6
+      parseuri: 3.0.2
       ws: 7.5.10
       xmlhttprequest-ssl: 1.6.3
       yeast: 0.1.2
@@ -1902,7 +1905,7 @@ snapshots:
 
   parseqs@0.0.6: {}
 
-  parseuri@0.0.6: {}
+  parseuri@3.0.2: {}
 
   parseurl@1.3.3: {}
 
@@ -2039,7 +2042,7 @@ snapshots:
       has-binary2: 1.0.3
       indexof: 0.0.1
       parseqs: 0.0.6
-      parseuri: 0.0.6
+      parseuri: 3.0.2
       socket.io-parser: 3.3.4
       to-array: 0.1.4
     transitivePeerDependencies:
